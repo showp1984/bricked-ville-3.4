@@ -43,7 +43,9 @@ struct cy8c_cs_data {
 	uint16_t intr;
 	uint8_t vk_id;
 	uint8_t debug_level;
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
         uint8_t btn_count;
+#endif
 	int *keycode;
 	int (*power)(int on);
 	int (*reset)(void);
@@ -62,6 +64,21 @@ extern int board_build_flag(void);
 #ifdef CONFIG_HAS_EARLYSUSPEND
 static void cy8c_cs_early_suspend(struct early_suspend *h);
 static void cy8c_cs_late_resume(struct early_suspend *h);
+#endif
+
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+int s2w_h[3] = {0, 0, 0};
+
+static int population_counter(int x) {
+        int match1 = 0x55555555;
+        int match2 = 0x33333333;
+        int match4 = 0x0f0f0f0f;
+        x -= (x >> 1) & match1;
+        x = (x & match2) + ((x >> 2) & match2);
+        x = (x + (x >> 4)) & match4;
+        x += x >> 8;
+        return (x + (x >> 16)) & 0x3f;
+}
 #endif
 
 int i2c_cy8c_read(struct i2c_client *client, uint8_t addr, uint8_t *data, uint8_t length)
@@ -468,28 +485,20 @@ err_fw_get_fail:
 	return ret;
 }
 
-static int population_counter(int x) {
-        int match1 = 0x55555555;
-        int match2 = 0x33333333;
-        int match4 = 0x0f0f0f0f;
-        x -= (x >> 1) & match1;
-        x = (x & match2) + ((x >> 2) & match2);
-        x = (x + (x >> 4)) & match4;
-        x += x >> 8;
-        return (x + (x >> 16)) & 0x3f;
-}
-
 static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 {
 	int ret = 0;
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+        int btn_state = 0, btn_id = 0;
+#endif
 	if ((cs->debug_level & 0x01) || board_build_flag() > 0)
 		pr_info("[cap] vk = %x\n", vk);
-
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
         if (vk)
                 cs->btn_count = population_counter(vk);
         else
                 cs->btn_count = 1;
-
+#endif
 	if (vk) {
 		switch (vk) {
 		case 0x01:
@@ -527,10 +536,35 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 			input_report_key(cs->input_dev, cs->keycode[3], 0);
 			break;
 		}
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+                btn_id = cs->vk_id;
+#endif
 		cs->vk_id = 0;
 	}
 	input_sync(cs->input_dev);
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+        if (cs->btn_count > 1) {
+                switch (vk) {
+                        case 3:
+                                btn_state = 1; // back + home
+                                break;
+                        case 5:
+                                btn_state = 2; // home + apps
+                                break;
+                        case 7:
+                                btn_state = 3; // back + home + apps
+                                break;
+                }
+        } else if (cs->btn_count) {
+                btn_state = 0; // single button
+        }
 
+        if (btn_state) {
+                printk(KERN_INFO"TESTEST: btn_id: %i\n", btn_id);
+        } else {
+                printk(KERN_INFO"TESTEST: btn_state: %i\n", btn_state);
+        }
+#endif
 	if (cs->func_support & CS_FUNC_PRINTRAW) {
 		if (cs->vk_id) {
 			queue_delayed_work(cs->wq_raw, &cs->work_raw,
@@ -541,7 +575,9 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 				cancel_delayed_work(&cs->work_raw);
 		}
 	}
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
         cs->btn_count = 0;
+#endif
 }
 
 static void cy8c_cs_work_func(struct work_struct *work)
