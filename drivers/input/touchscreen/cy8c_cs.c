@@ -42,6 +42,7 @@ struct cy8c_cs_data {
 	uint16_t intr;
 	uint8_t vk_id;
 	uint8_t debug_level;
+        uint8_t btn_count;
 	int *keycode;
 	int (*power)(int on);
 	int (*reset)(void);
@@ -457,11 +458,27 @@ err_fw_get_fail:
 	return ret;
 }
 
+static int population_counter(int x) {
+        int match1 = 0x55555555;
+        int match2 = 0x33333333;
+        int match4 = 0x0f0f0f0f;
+        x -= (x >> 1) & match1;
+        x = (x & match2) + ((x >> 2) & match2);
+        x = (x + (x >> 4)) & match4;
+        x += x >> 8;
+        return (x + (x >> 16)) & 0x3f;
+}
+
 static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 {
 	int ret = 0;
 	if ((cs->debug_level & 0x01) || 1 == board_mfg_mode())
 		pr_info("[cap] vk = %x\n", vk);
+
+        if (vk)
+                cs->btn_count = population_counter(vk);
+        else
+                cs->btn_count = 1;
 
 	if (vk) {
 		switch (vk) {
@@ -514,6 +531,7 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 				cancel_delayed_work(&cs->work_raw);
 		}
 	}
+        cs->btn_count = 0;
 }
 
 static void cy8c_cs_work_func(struct work_struct *work)
