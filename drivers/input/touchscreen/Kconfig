@@ -216,6 +216,11 @@ config TOUCHSCREEN_CYPRESS_CS
 	  Say Y here if you have cap sensor on your device
 	  If unsure, say N.
 
+config TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+        tristate "Sweep2Wake for Cypress CS touchscreens"
+        depends on TOUCHSCREEN_CYPRESS_CS
+        default n
+
 config TOUCH_KEY_FILTER
 	tristate "Virtualkey and TouchScreen Filter"
 	depends on TOUCHSCREEN_CYPRESS_CS
