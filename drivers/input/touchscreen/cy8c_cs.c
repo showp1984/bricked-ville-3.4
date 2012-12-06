@@ -137,7 +137,8 @@ static void do_sweep2wake(int btn_state, int btn_id) {
         s2w_h[0][1] = s2w_h[0][0];
         s2w_h[0][0] = btn_state;
 
-        if (btn_state == 4) {
+        if ((btn_state == 4) || ((btn_state == 3) &&
+            ((s2w_h[0][1] != 0) && ((s2w_h[1][1] != 1) || (s2w_h[1][1] != 4))))) {
 #if DEBUG
                         printk(KERN_INFO"[sweep2wake]: Invalid input. #ignored");
 #endif
