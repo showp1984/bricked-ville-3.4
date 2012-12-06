@@ -142,7 +142,7 @@ static void do_sweep2wake(int btn_state, int btn_id) {
         if ((btn_state == 4) || ((btn_state == 3) &&
             ((s2w_h[0][1] != 0) && ((s2w_h[1][1] != 1) || (s2w_h[1][1] != 4))))) {
 #if DEBUG
-                        printk(KERN_INFO"[sweep2wake]: Invalid input. #ignored");
+                        printk(KERN_INFO"[sweep2wake]: Invalid input. #ignored\n");
 #endif
                 return;
         }
@@ -648,6 +648,9 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
         } else {
                 //release btn
                 cs->btn_count = 0;
+#if DEBUG
+                printk(KERN_INFO"[sweep2wake]: Button(s) release(d).\n");
+#endif
         }
 #endif
 
