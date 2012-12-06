@@ -980,6 +980,7 @@ static int cy8c_cs_resume(struct i2c_client *client)
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
         scr_suspended = false;
 	if (s2w_switch == 0) {
+                disable_irq_wake(client->irq);
 #endif
         	cs->reset();
 
