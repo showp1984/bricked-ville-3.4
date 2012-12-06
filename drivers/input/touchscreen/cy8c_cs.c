@@ -65,7 +65,7 @@ static void cy8c_cs_late_resume(struct early_suspend *h);
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
-#define DEBUG 1
+#define DEBUG 0
 
 int s2w_h[2][3] = {{0, 0, 0}, {0, 0, 0}};
 
