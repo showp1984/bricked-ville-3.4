@@ -27,7 +27,7 @@
 #include <linux/workqueue.h>
 
 #define CY8C_I2C_RETRY_TIMES 	(10)
-#define CY8C_KEYLOCKTIME    	(1500)
+#define CY8C_KEYLOCKTIME    	(1000)
 #define CY8C_KEYLOCKRESET	(6)
 
 struct cy8c_cs_data {
