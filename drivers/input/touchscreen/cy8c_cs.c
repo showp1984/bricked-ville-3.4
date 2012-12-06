@@ -69,7 +69,54 @@ static void cy8c_cs_late_resume(struct early_suspend *h);
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
 #define DEBUG 0
 
+int s2w_switch = 1;
+bool scr_suspended = false;
 int s2w_h[2][3] = {{0, 0, 0}, {0, 0, 0}};
+static struct input_dev * sweep2wake_pwrdev;
+static DEFINE_MUTEX(pwrlock);
+
+#ifdef CONFIG_CMDLINE_OPTIONS
+static int __init cy8c_read_s2w_cmdline(char *s2w)
+{
+        if (strcmp(s2w, "1") == 0) {
+		printk(KERN_INFO "[cmdline_s2w]: Sweep2Wake enabled. | s2w='%s'", s2w);
+		s2w_switch = 1;
+	} else if (strcmp(s2w, "0") == 0) {
+		printk(KERN_INFO "[cmdline_s2w]: Sweep2Wake disabled. | s2w='%s'", s2w);
+		s2w_switch = 0;
+	} else {
+		printk(KERN_INFO "[cmdline_s2w]: No valid input found. Sweep2Wake disabled. | s2w='%s'", s2w);
+		s2w_switch = 0;
+	}
+	return 1;
+}
+__setup("s2w=", cy8c_read_s2w_cmdline);
+#endif
+
+extern void sweep2wake_setdev(struct input_dev * input_device) {
+	sweep2wake_pwrdev = input_device;
+	return;
+}
+EXPORT_SYMBOL(sweep2wake_setdev);
+
+static void sweep2wake_presspwr(struct work_struct * sweep2wake_presspwr_work) {
+	input_event(sweep2wake_pwrdev, EV_KEY, KEY_POWER, 1);
+	input_event(sweep2wake_pwrdev, EV_SYN, 0, 0);
+	msleep(80);
+	input_event(sweep2wake_pwrdev, EV_KEY, KEY_POWER, 0);
+	input_event(sweep2wake_pwrdev, EV_SYN, 0, 0);
+	msleep(80);
+	mutex_unlock(&pwrlock);
+	return;
+}
+static DECLARE_WORK(sweep2wake_presspwr_work, sweep2wake_presspwr);
+
+void sweep2wake_pwrtrigger(void) {
+	if (mutex_trylock(&pwrlock)) {
+		schedule_work(&sweep2wake_presspwr_work);
+	}
+	return;
+}
 
 static int population_counter(int x) {
         int match1 = 0x55555555;
@@ -107,28 +154,36 @@ static void do_sweep2wake(int btn_state, int btn_id) {
         }
 #endif
 
-        if (((s2w_h[0][2] == 0) && (s2w_h[1][2] == 1)) &&
-            ((s2w_h[0][1] == 0) && (s2w_h[1][1] == 2)) &&
-            ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
-                printk(KERN_INFO"[sweep2wake]: >> OFF->ON <<\n");
-        } else if (( s2w_h[0][1] == 1) &&
-                   ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
-                printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case) <<\n");
-        } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 1)) &&
-                   ((s2w_h[0][0] == 2))) {
-                printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #2) <<\n");
-        }
-
-        if (((s2w_h[0][2] == 0) && (s2w_h[1][2] == 4)) &&
-            ((s2w_h[0][1] == 0) && (s2w_h[1][1] == 2)) &&
-            ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 1))) {
-                printk(KERN_INFO"[sweep2wake]: >> ON->OFF <<\n");
-        } else if (( s2w_h[0][1] == 2) &&
-                   ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 1))) {
-                printk(KERN_INFO"[sweep2wake]: >> ON->OFF (special case) <<\n");
-        } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 4)) &&
-                   ((s2w_h[0][0] == 1))) {
-                printk(KERN_INFO"[sweep2wake]: >> ON->OFF (special case #2) <<\n");
+        if (scr_suspended) {
+                if (((s2w_h[0][2] == 0) && (s2w_h[1][2] == 1)) &&
+                    ((s2w_h[0][1] == 0) && (s2w_h[1][1] == 2)) &&
+                ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
+                        printk(KERN_INFO"[sweep2wake]: >> OFF->ON <<\n");
+                        sweep2wake_pwrtrigger();
+                } else if (( s2w_h[0][1] == 1) &&
+                           ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
+                        printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case) <<\n");
+                        sweep2wake_pwrtrigger();
+                } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 1)) &&
+                           ((s2w_h[0][0] == 2))) {
+                        printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #2) <<\n");
+                        sweep2wake_pwrtrigger();
+                }
+        } else if (!scr_suspended) {
+                if (((s2w_h[0][2] == 0) && (s2w_h[1][2] == 4)) &&
+                    ((s2w_h[0][1] == 0) && (s2w_h[1][1] == 2)) &&
+                    ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 1))) {
+                        printk(KERN_INFO"[sweep2wake]: >> ON->OFF <<\n");
+                        sweep2wake_pwrtrigger();
+                } else if (( s2w_h[0][1] == 2) &&
+                           ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 1))) {
+                        printk(KERN_INFO"[sweep2wake]: >> ON->OFF (special case) <<\n");
+                        sweep2wake_pwrtrigger();
+                } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 4)) &&
+                           ((s2w_h[0][0] == 1))) {
+                        printk(KERN_INFO"[sweep2wake]: >> ON->OFF (special case #2) <<\n");
+                        sweep2wake_pwrtrigger();
+                }
         }
 
         return;
@@ -405,6 +460,31 @@ static ssize_t debug_level_show(struct device *dev, struct device_attribute *att
 }
 DEVICE_ATTR(debug_level, (S_IWUSR|S_IRUGO), debug_level_show, debug_level_set);
 
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+static ssize_t cy8c_sweep2wake_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	size_t count = 0;
+
+	count += sprintf(buf, "%d\n", s2w_switch);
+
+	return count;
+}
+
+static ssize_t cy8c_sweep2wake_dump(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	if (buf[0] >= '0' && buf[0] <= '2' && buf[1] == '\n')
+		if (s2w_switch != buf[0] - '0')
+			s2w_switch = buf[0] - '0';
+
+	return count;
+}
+
+static DEVICE_ATTR(sweep2wake, (S_IWUSR|S_IRUGO),
+	cy8c_sweep2wake_show, cy8c_sweep2wake_dump);
+#endif
+
 static struct kobject *android_touchkey_kobj;
 
 static int cy8c_touchkey_sysfs_init(void)
@@ -416,6 +496,13 @@ static int cy8c_touchkey_sysfs_init(void)
 		ret = -ENOMEM;
 		return ret;
 	}
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+	ret = sysfs_create_file(android_touchkey_kobj, &dev_attr_sweep2wake.attr);
+	if (ret) {
+		printk(KERN_ERR "%s: sysfs_create_file failed\n", __func__);
+		return ret;
+	}
+#endif
 	ret = sysfs_create_file(android_touchkey_kobj, &dev_attr_gpio.attr);
 	if (ret) {
 		printk(KERN_ERR "%s: sysfs_create_file gpio failed\n", __func__);
@@ -461,6 +548,9 @@ static int cy8c_touchkey_sysfs_init(void)
 
 static void cy8c_touchkey_sysfs_deinit(void)
 {
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+	sysfs_remove_file(android_touchkey_kobj, &dev_attr_sweep2wake.attr);
+#endif
 	sysfs_remove_file(android_touchkey_kobj, &dev_attr_gpio.attr);
 	sysfs_remove_file(android_touchkey_kobj, &dev_attr_read.attr);
 	sysfs_remove_file(android_touchkey_kobj, &dev_attr_vendor.attr);
@@ -627,8 +717,8 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
                 } else if (cs->btn_count == 1) {
                         btn_state = 0; // single button
                 }
-
-                do_sweep2wake(btn_state, btn_id);
+        	if (s2w_switch > 0)
+                        do_sweep2wake(btn_state, btn_id);
         }
 #endif
 	if (cs->func_support & CS_FUNC_PRINTRAW) {
@@ -853,18 +943,32 @@ static int cy8c_cs_suspend(struct i2c_client *client, pm_message_t mesg)
 
 	pr_info("[cap] %s\n", __func__);
 
-	if (cs->func_support & CS_FUNC_PRINTRAW) {
-		ret = cancel_delayed_work_sync(&cs->work_raw);
-		if (!ret)
-			cancel_delayed_work(&cs->work_raw);
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+	if (s2w_switch > 0) {
+		//screen off, enable_irq_wake
+		scr_suspended = true;
+		enable_irq_wake(client->irq);
 	}
-	if (client->irq && cs->use_irq) {
-		disable_irq(client->irq);
-		ret = cancel_work_sync(&cs->work);
-		if (ret)
-			enable_irq(client->irq);
+#endif
+
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+        if (s2w_switch == 0) {
+#endif
+        	if (cs->func_support & CS_FUNC_PRINTRAW) {
+        		ret = cancel_delayed_work_sync(&cs->work_raw);
+        		if (!ret)
+        			cancel_delayed_work(&cs->work_raw);
+        	}
+        	if (client->irq && cs->use_irq) {
+		        disable_irq(client->irq);
+		        ret = cancel_work_sync(&cs->work);
+		        if (ret)
+			        enable_irq(client->irq);
+	        }
+        	i2c_cy8c_write_byte_data(client, CS_MODE, CS_CMD_DSLEEP);
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
 	}
-	i2c_cy8c_write_byte_data(client, CS_MODE, CS_CMD_DSLEEP);
+#endif
 	return 0;
 }
 
@@ -873,12 +977,19 @@ static int cy8c_cs_resume(struct i2c_client *client)
 	struct cy8c_cs_data *cs = i2c_get_clientdata(client);
 
 	pr_info("[cap] %s\n", __func__);
-	cs->reset();
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+        scr_suspended = false;
+	if (s2w_switch == 0) {
+#endif
+        	cs->reset();
 
-	msleep(50);
+        	msleep(50);
 
-	if (client->irq && cs->use_irq)
-		enable_irq(client->irq);
+        	if (client->irq && cs->use_irq)
+        		enable_irq(client->irq);
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+	}
+#endif
 	return 0;
 }
 
