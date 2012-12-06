@@ -705,6 +705,7 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
         if (vk) {
                 if (cs->btn_count > 1) {
+                        //more than one pressed, determine which btns are pressed
                         switch (vk) {
                                 case 3:
                                         btn_state = 1; // back + home
