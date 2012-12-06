@@ -137,7 +137,7 @@ static void do_sweep2wake(int btn_state, int btn_id) {
         s2w_h[0][1] = s2w_h[0][0];
         s2w_h[0][0] = btn_state;
 
-        if ((btn_state == 4) || (btn_state == 3)) {
+        if (btn_state == 4) {
 #if DEBUG
                         printk(KERN_INFO"[sweep2wake]: Invalid input. #ignored");
 #endif
@@ -163,7 +163,7 @@ static void do_sweep2wake(int btn_state, int btn_id) {
                         printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case) <<\n");
                         sweep2wake_pwrtrigger();
                 } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 1)) &&
-                           ((s2w_h[0][0] == 2))) {
+                           ((s2w_h[0][0] == 2) || (s2w_h[0][0] == 3))) {
                         printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #2) <<\n");
                         sweep2wake_pwrtrigger();
                 }
@@ -178,7 +178,7 @@ static void do_sweep2wake(int btn_state, int btn_id) {
                         printk(KERN_INFO"[sweep2wake]: >> ON->OFF (special case) <<\n");
                         sweep2wake_pwrtrigger();
                 } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 4)) &&
-                           ((s2w_h[0][0] == 1))) {
+                           ((s2w_h[0][0] == 1) || (s2w_h[0][0] == 3))) {
                         printk(KERN_INFO"[sweep2wake]: >> ON->OFF (special case #2) <<\n");
                         sweep2wake_pwrtrigger();
                 }
