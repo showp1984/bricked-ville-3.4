@@ -892,7 +892,7 @@ static int cy8c_cs_probe(struct i2c_client *client,
 	cs->use_irq = 1;
 	if (client->irq && cs->use_irq) {
 		ret = request_irq(client->irq, cy8c_cs_irq_handler,
-				  IRQF_TRIGGER_FALLING,
+				  IRQF_TRIGGER_FALLING | IRQF_ONESHOT | IRQF_IRQPOLL,
 				  cs->id.chipid == CS_CHIPID ? CYPRESS_SS_NAME : CYPRESS_CS_NAME,
 				  cs);
 		if (ret < 0) {
