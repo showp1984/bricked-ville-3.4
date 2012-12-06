@@ -67,7 +67,7 @@ static void cy8c_cs_late_resume(struct early_suspend *h);
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
-int s2w_h[3] = {0, 0, 0};
+int s2w_h[2][3] = {{0, 0, 0}, {0, 0, 0}};
 
 static int population_counter(int x) {
         int match1 = 0x55555555;
@@ -496,26 +496,40 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
         if (vk)
                 cs->btn_count = population_counter(vk);
-        else
+        else {
                 cs->btn_count = 1;
+        }
 #endif
+
 	if (vk) {
 		switch (vk) {
 		case 0x01:
 			input_report_key(cs->input_dev, cs->keycode[0], 1);
 			cs->vk_id = vk;
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+                        btn_id = cs->vk_id;
+#endif
 			break;
 		case 0x02:
 			input_report_key(cs->input_dev, cs->keycode[1], 1);
 			cs->vk_id = vk;
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+                        btn_id = cs->vk_id;
+#endif
 			break;
 		case 0x04:
 			input_report_key(cs->input_dev, cs->keycode[2], 1);
 			cs->vk_id = vk;
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+                        btn_id = cs->vk_id;
+#endif
 			break;
 		case 0x08:
 			input_report_key(cs->input_dev, cs->keycode[3], 1);
 			cs->vk_id = vk;
+#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+                        btn_id = cs->vk_id;
+#endif
 			break;
 		}
 #if defined(CONFIG_TOUCH_KEY_FILTER)
@@ -536,33 +550,35 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 			input_report_key(cs->input_dev, cs->keycode[3], 0);
 			break;
 		}
-#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
-                btn_id = cs->vk_id;
-#endif
 		cs->vk_id = 0;
 	}
 	input_sync(cs->input_dev);
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
-        if (cs->btn_count > 1) {
-                switch (vk) {
-                        case 3:
-                                btn_state = 1; // back + home
-                                break;
-                        case 5:
-                                btn_state = 2; // home + apps
-                                break;
-                        case 7:
-                                btn_state = 3; // back + home + apps
-                                break;
+        if (vk) {
+                if (cs->btn_count > 1) {
+                        switch (vk) {
+                                case 3:
+                                        btn_state = 1; // back + home
+                                        break;
+                                case 5:
+                                        btn_state = 4; // back + apps
+                                        break;
+                                case 6:
+                                        btn_state = 2; // home + apps
+                                        break;
+                                case 7:
+                                        btn_state = 3; // back + home + apps
+                                        break;
+                        }
+                } else if (cs->btn_count == 1) {
+                        btn_state = 0; // single button
                 }
-        } else if (cs->btn_count) {
-                btn_state = 0; // single button
-        }
 
-        if (btn_state) {
-                printk(KERN_INFO"TESTEST: btn_id: %i\n", btn_id);
-        } else {
-                printk(KERN_INFO"TESTEST: btn_state: %i\n", btn_state);
+                if (btn_state == 0) {
+                        printk(KERN_INFO"TESTEST: btn_id: %i\n", btn_id);
+                } else if (btn_state > 0) {
+                        printk(KERN_INFO"TESTEST: btn_state: %i\n", btn_state);
+                }
         }
 #endif
 	if (cs->func_support & CS_FUNC_PRINTRAW) {
@@ -576,7 +592,7 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 		}
 	}
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
-        cs->btn_count = 0;
+        cs->btn_count = 0; //pseudo release button (we don't actually know that)
 #endif
 }
 
