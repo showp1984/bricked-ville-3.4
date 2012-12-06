@@ -638,10 +638,15 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 	if ((cs->debug_level & 0x01) || board_build_flag() > 0)
 		pr_info("[cap] vk = %x\n", vk);
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
-        if (vk)
+        if (vk) {
+                //more than one btn pressed
                 cs->btn_count = population_counter(vk);
-        else {
+        } else if (cs->vk_id) {
+                //exactly one btn pressed
                 cs->btn_count = 1;
+        } else {
+                //release btn
+                cs->btn_count = 0;
         }
 #endif
 
@@ -731,9 +736,6 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
 				cancel_delayed_work(&cs->work_raw);
 		}
 	}
-#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
-        cs->btn_count = 0; //pseudo release button (we don't actually know that)
-#endif
 }
 
 static void cy8c_cs_work_func(struct work_struct *work)
