@@ -67,6 +67,8 @@ static void cy8c_cs_late_resume(struct early_suspend *h);
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
+#define DEBUG 1
+
 int s2w_h[2][3] = {{0, 0, 0}, {0, 0, 0}};
 
 static int population_counter(int x) {
@@ -78,6 +80,58 @@ static int population_counter(int x) {
         x = (x + (x >> 4)) & match4;
         x += x >> 8;
         return (x + (x >> 16)) & 0x3f;
+}
+
+static void do_sweep2wake(int btn_state, int btn_id) {
+        //preserve old entries
+        s2w_h[1][2] = s2w_h[1][1];
+        s2w_h[1][1] = s2w_h[1][0];
+        s2w_h[1][0] = btn_id;
+
+        s2w_h[0][2] = s2w_h[0][1];
+        s2w_h[0][1] = s2w_h[0][0];
+        s2w_h[0][0] = btn_state;
+
+        if ((btn_state == 4) || (btn_state == 3)) {
+#if DEBUG
+                        printk(KERN_INFO"[sweep2wake]: Invalid input. #ignored");
+#endif
+                return;
+        }
+
+#if DEBUG
+        if (btn_state == 0) {
+                printk(KERN_INFO"[sweep2wake]: btn_id: %i\n", btn_id);
+        } else if (btn_state > 0) {
+                printk(KERN_INFO"[sweep2wake]: btn_state: %i\n", btn_state);
+        }
+#endif
+
+        if (((s2w_h[0][2] == 0) && (s2w_h[1][2] == 1)) &&
+            ((s2w_h[0][1] == 0) && (s2w_h[1][1] == 2)) &&
+            ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
+                printk(KERN_INFO"[sweep2wake]: >> OFF->ON <<\n");
+        } else if (( s2w_h[0][1] == 1) &&
+                   ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
+                printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case) <<\n");
+        } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 1)) &&
+                   ((s2w_h[0][0] == 2))) {
+                printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #2) <<\n");
+        }
+
+        if (((s2w_h[0][2] == 0) && (s2w_h[1][2] == 4)) &&
+            ((s2w_h[0][1] == 0) && (s2w_h[1][1] == 2)) &&
+            ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 1))) {
+                printk(KERN_INFO"[sweep2wake]: >> ON->OFF <<\n");
+        } else if (( s2w_h[0][1] == 2) &&
+                   ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 1))) {
+                printk(KERN_INFO"[sweep2wake]: >> ON->OFF (special case) <<\n");
+        } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 4)) &&
+                   ((s2w_h[0][0] == 1))) {
+                printk(KERN_INFO"[sweep2wake]: >> ON->OFF (special case #2) <<\n");
+        }
+
+        return;
 }
 #endif
 
@@ -574,11 +628,7 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
                         btn_state = 0; // single button
                 }
 
-                if (btn_state == 0) {
-                        printk(KERN_INFO"TESTEST: btn_id: %i\n", btn_id);
-                } else if (btn_state > 0) {
-                        printk(KERN_INFO"TESTEST: btn_state: %i\n", btn_state);
-                }
+                do_sweep2wake(btn_state, btn_id);
         }
 #endif
 	if (cs->func_support & CS_FUNC_PRINTRAW) {
