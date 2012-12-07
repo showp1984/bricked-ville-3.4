@@ -185,11 +185,15 @@ static void do_sweep2wake(int btn_state, int btn_id, cputime64_t trigger_time) {
                         sweep2wake_pwrtrigger();
                 } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 1) && ((s2w_t[0]-s2w_t[1]) < S2W_CONT_TOUT)) &&
                            (s2w_h[0][0] == 2)) {
-                        printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #3) <<\n");
+                        printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #2) <<\n");
                         sweep2wake_pwrtrigger();
                 } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 1) && ((s2w_t[0]-s2w_t[1]) < S2W_CONT_TOUT)) &&
                            ((s2w_h[0][0] == 2) || (s2w_h[0][0] == 3))) {
-                        printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #2) <<\n");
+                        printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #3) <<\n");
+                        sweep2wake_pwrtrigger();
+                } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 1) && ((s2w_t[0]-s2w_t[1]) < S2W_CONT_TOUT)) &&
+                    ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
+                        printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #4) <<\n");
                         sweep2wake_pwrtrigger();
                 }
         } else if (!scr_suspended) {
