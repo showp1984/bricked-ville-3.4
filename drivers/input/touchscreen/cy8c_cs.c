@@ -166,12 +166,16 @@ static void do_sweep2wake(int btn_state, int btn_id) {
         if (scr_suspended) {
                 if (((s2w_h[0][2] == 0) && (s2w_h[1][2] == 1)) &&
                     ((s2w_h[0][1] == 0) && (s2w_h[1][1] == 2)) &&
-                ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
+                    ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
                         printk(KERN_INFO"[sweep2wake]: >> OFF->ON <<\n");
                         sweep2wake_pwrtrigger();
                 } else if (( s2w_h[0][1] == 1) &&
                            ((s2w_h[0][0] == 0) && (s2w_h[1][0] == 4))) {
                         printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case) <<\n");
+                        sweep2wake_pwrtrigger();
+                } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 1)) &&
+                           (s2w_h[0][0] == 2)) {
+                        printk(KERN_INFO"[sweep2wake]: >> OFF->ON (special case #3) <<\n");
                         sweep2wake_pwrtrigger();
                 } else if (((s2w_h[0][1] == 0) && (s2w_h[1][1] == 1)) &&
                            ((s2w_h[0][0] == 2) || (s2w_h[0][0] == 3))) {
