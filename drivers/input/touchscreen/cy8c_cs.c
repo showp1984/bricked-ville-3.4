@@ -129,6 +129,16 @@ static int population_counter(int x) {
         return (x + (x >> 16)) & 0x3f;
 }
 
+static void s2w_reset(void) {
+        s2w_h[1][2] = 0;
+        s2w_h[1][1] = 0;
+        s2w_h[1][0] = 0;
+
+        s2w_h[0][2] = 0;
+        s2w_h[0][1] = 0;
+        s2w_h[0][0] = 0;
+}
+
 static void do_sweep2wake(int btn_state, int btn_id) {
         //preserve old entries
         s2w_h[1][2] = s2w_h[1][1];
@@ -648,6 +658,7 @@ static void report_key_func(struct cy8c_cs_data *cs, uint8_t vk)
         } else {
                 //release btn
                 cs->btn_count = 0;
+                s2w_reset();
 #if DEBUG
                 printk(KERN_INFO"[sweep2wake]: Button(s) release(d).\n");
 #endif
