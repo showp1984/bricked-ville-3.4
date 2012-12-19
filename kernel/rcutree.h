@@ -447,7 +447,7 @@ static void rcu_report_exp_rnp(struct rcu_state *rsp, struct rcu_node *rnp);
 #endif /* #if defined(CONFIG_HOTPLUG_CPU) || defined(CONFIG_TREE_PREEMPT_RCU) */
 static int rcu_preempt_pending(int cpu);
 static int rcu_preempt_needs_cpu(int cpu);
-static void __cpuinit rcu_preempt_init_percpu_data(int cpu);
+static void rcu_preempt_init_percpu_data(int cpu);
 static void rcu_preempt_send_cbs_to_online(void);
 static void __init __rcu_init_preempt(void);
 static void rcu_needs_cpu_flush(void);
@@ -458,13 +458,13 @@ static void invoke_rcu_callbacks_kthread(void);
 static void rcu_preempt_do_callbacks(void);
 static void rcu_boost_kthread_setaffinity(struct rcu_node *rnp,
 					  cpumask_var_t cm);
-static int __cpuinit rcu_spawn_one_boost_kthread(struct rcu_state *rsp,
+static int rcu_spawn_one_boost_kthread(struct rcu_state *rsp,
 						 struct rcu_node *rnp,
 						 int rnp_index);
 static void invoke_rcu_node_kthread(struct rcu_node *rnp);
 static void rcu_yield(void (*f)(unsigned long), unsigned long arg);
 #endif /* #ifdef CONFIG_RCU_BOOST */
 static void rcu_cpu_kthread_setrt(int cpu, int to_rt);
-static void __cpuinit rcu_prepare_kthreads(int cpu);
+static void rcu_prepare_kthreads(int cpu);
 
 #endif /* #ifndef RCU_TREE_NONCORE */

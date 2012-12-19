@@ -1812,7 +1812,6 @@ static struct sysdev_class mce_sysclass = {
 
 DEFINE_PER_CPU(struct sys_device, mce_dev);
 
-__cpuinitdata
 void (*threshold_cpu_callback)(unsigned long action, unsigned int cpu);
 
 static inline struct mce_bank *attr_to_bank(struct sysdev_attribute *attr)
