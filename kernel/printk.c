@@ -1037,7 +1037,7 @@ static void console_flush(struct work_struct *work)
 	console_unlock();
 }
 
-static __cpuinitdata DECLARE_WORK(console_cpu_notify_work, console_flush);
+static DECLARE_WORK(console_cpu_notify_work, console_flush);
 
 static int console_cpu_notify(struct notifier_block *self,
 	unsigned long action, void *hcpu)
