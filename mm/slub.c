@@ -3174,7 +3174,7 @@ err:
 EXPORT_SYMBOL(kmem_cache_create);
 
 #ifdef CONFIG_SMP
-static int __cpuinit slab_cpuup_callback(struct notifier_block *nfb,
+static int slab_cpuup_callback(struct notifier_block *nfb,
 		unsigned long action, void *hcpu)
 {
 	long cpu = (long)hcpu;

@@ -202,7 +202,7 @@ repeat:
 
 extern void sched_set_stop_task(int cpu, struct task_struct *stop);
 
-static int __cpuinit cpu_stop_cpu_callback(struct notifier_block *nfb,
+static int cpu_stop_cpu_callback(struct notifier_block *nfb,
 					   unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned long)hcpu;

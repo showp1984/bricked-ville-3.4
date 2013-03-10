@@ -68,7 +68,7 @@ static int raise_blk_irq(int cpu, struct request *rq)
 }
 #endif
 
-static int __cpuinit blk_cpu_notify(struct notifier_block *self,
+static int blk_cpu_notify(struct notifier_block *self,
 				    unsigned long action, void *hcpu)
 {
 	if (action == CPU_DEAD || action == CPU_DEAD_FROZEN) {
