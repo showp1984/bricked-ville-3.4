@@ -1446,7 +1446,7 @@ EXPORT_SYMBOL(pm8921_bms_get_vsense_avg);
 
 int pm8921_bms_get_battery_current(int *result_ua)
 {
-	int vsense;
+	int vsense = 0;
 
 	if (!the_chip) {
 		pr_err("called before initialization\n");
@@ -2599,14 +2599,14 @@ static int dump_cc_uah(void)
 int prev_cc_uah = 0;
 static int pm8921_bms_suspend(struct device *dev)
 {
-	u64 val;
-	int rc;
+	u64 val = 0;
+	int rc = 0;
 	struct pm8xxx_adc_chan_result result;
 	struct pm8921_bms_chip *chip = dev_get_drvdata(dev);
 	struct pm8921_soc_params raw;
-	int fcc_uah;
-	int remaining_charge_uah;
-	int cc_uah;
+	int fcc_uah = 0;
+	int remaining_charge_uah = 0;
+	int cc_uah = 0;
 
 	chip->batt_temp_suspend = 0;
 	rc = pm8xxx_adc_read(chip->batt_temp_channel, &result);
@@ -2645,13 +2645,13 @@ static int pm8921_bms_suspend(struct device *dev)
 #define DELTA_RBATT_PERCENT	10
 static int pm8921_bms_resume(struct device *dev)
 {
-	u64 val;
+	u64 val = 0;
 	struct pm8921_rbatt_params raw;
 	struct pm8921_bms_chip *chip = dev_get_drvdata(dev);
-	int rbatt;
-	int expected_rbatt;
-	int scalefactor;
-	int delta_rbatt;
+	int rbatt = 0;
+	int expected_rbatt = 0;
+	int scalefactor = 0;
+	int delta_rbatt = 0;
 
 	read_rbatt_params_raw(chip, &raw);
 	rbatt = calculate_rbatt_resume(chip, &raw);
