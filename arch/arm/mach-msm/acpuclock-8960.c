@@ -22,6 +22,10 @@
 #include <linux/cpufreq.h>
 #include <linux/cpu.h>
 #include <linux/regulator/consumer.h>
+#ifdef CONFIG_DEBUG_FS
+#include <linux/seq_file.h>
+#include <linux/debugfs.h>
+#endif
 
 #include <asm/mach-types.h>
 #include <asm/cpu.h>
@@ -152,6 +156,10 @@ static void set_acpuclk_L2_freq_foot_print(unsigned khz)
 static int acpu_max_freq = CONFIG_ACPU_MAX_FREQ;
 #else
 static int acpu_max_freq = 0;
+#endif
+
+#ifdef CONFIG_DEBUG_FS
+static unsigned int krait_chip_variant = 0;
 #endif
 
 enum scalables {
@@ -1564,6 +1572,41 @@ static struct acpuclk_data acpuclk_8960_data = {
 	.power_collapse_khz = STBY_KHZ,
 	.wait_for_irq_khz = STBY_KHZ,
 };
+
+#ifdef CONFIG_DEBUG_FS
+static int krait_variant_debugfs_show(struct seq_file *s, void *data)
+{
+	seq_printf(s, "Your krait chip variant is: \n");
+	seq_printf(s, "[%s] SLOW \n", ((krait_chip_variant == PVS_SLOW) ? "X" : " "));
+	seq_printf(s, "[%s] NOMINAL \n", ((krait_chip_variant == PVS_NOM) ? "X" : " "));
+	seq_printf(s, "[%s] FAST \n", ((krait_chip_variant == PVS_FAST) ? "X" : " "));
+	seq_printf(s, "[%s] FASTER \n", ((krait_chip_variant == PVS_FASTER) ? "X" : " "));
+
+	return 0;
+}
+
+static int krait_variant_debugfs_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, krait_variant_debugfs_show, inode->i_private);
+}
+
+static const struct file_operations krait_variant_debugfs_fops = {
+	.open		= krait_variant_debugfs_open,
+	.read		= seq_read,
+	.llseek		= seq_lseek,
+	.release	= single_release,
+};
+
+static int __init krait_variant_debugfs_init(void) {
+        struct dentry *d;
+        d = debugfs_create_file("krait_variant", S_IRUGO, NULL, NULL,
+        &krait_variant_debugfs_fops);
+        if (!d)
+                return -ENOMEM;
+        return 0;
+}
+late_initcall(krait_variant_debugfs_init);
+#endif
 
 static int __init acpuclk_8960_init(struct acpuclk_soc_data *soc_data)
 {
