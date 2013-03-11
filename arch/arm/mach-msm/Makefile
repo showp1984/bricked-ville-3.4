@@ -272,38 +272,61 @@ endif
 obj-$(CONFIG_MACH_TAHITI) += board-tahiti.o board-tahiti-regulator.o board-tahiti-gpio.o
 obj-$(CONFIG_MACH_TAHITI) += board-tahiti-keypad.o
 obj-$(CONFIG_MACH_TAHITI) += board-tahiti-audio.o
-obj-$(CONFIG_MACH_TAHITI) += htc_bdaddress.o htc_util.o
+obj-$(CONFIG_MACH_TAHITI) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_TAHITI) += htc_util.o
+endif
+
 obj-$(CONFIG_MACH_FIGHTER) += board-fighter.o board-fighter-regulator.o board-fighter-gpio.o
 obj-$(CONFIG_MACH_FIGHTER) += board-fighter-keypad.o
 obj-$(CONFIG_MACH_FIGHTER) += board-fighter-audio.o
-obj-$(CONFIG_MACH_FIGHTER) += htc_bdaddress.o htc_util.o
+obj-$(CONFIG_MACH_FIGHTER) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_FIGHTER) += htc_util.o
+endif
+
 obj-$(CONFIG_MACH_JET) += board-jet.o board-jet-regulator.o board-jet-gpio.o board-jet-audio.o
 obj-$(CONFIG_MACH_JET) += board-jet-keypad.o
-obj-$(CONFIG_MACH_JET) += htc_bdaddress.o htc_util.o
+obj-$(CONFIG_MACH_JET) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_JET) += htc_util.o
+endif
 
 obj-$(CONFIG_MACH_JEWEL_DD) += board-jel_dd.o board-jel_dd-regulator.o board-jel_dd-gpio.o 
 obj-$(CONFIG_MACH_JEWEL_DD) += board-jel_dd-keypad.o
 obj-$(CONFIG_MACH_JEWEL_DD) += display/board-jel_dd-panel.o
 obj-$(CONFIG_MACH_JEWEL_DD) += board-jel_dd-audio.o
-obj-$(CONFIG_MACH_JEWEL_DD) += htc_bdaddress.o htc_util.o
+obj-$(CONFIG_MACH_JEWEL_DD) += htc_bdaddress.o
 obj-$(CONFIG_MACH_JEWEL_DD) += board-jel_dd-gsm-radio.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_JEWEL_DD) += htc_util.o
+endif
 
 obj-$(CONFIG_MACH_VILLE) += board-ville.o board-ville-regulator.o board-ville-gpio.o
 obj-$(CONFIG_MACH_VILLE) += board-ville-keypad.o
 obj-$(CONFIG_MACH_VILLE) += board-ville-audio.o
-obj-$(CONFIG_MACH_VILLE) += htc_bdaddress.o htc_util.o
+obj-$(CONFIG_MACH_VILLE) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_VILLE) += htc_util.o
+endif
 
 obj-$(CONFIG_MACH_VALENTE_WX) += board-valente_wx.o board-valente_wx-regulator.o board-valente_wx-gpio.o
 obj-$(CONFIG_MACH_VALENTE_WX) += board-valente_wx-keypad.o
 obj-$(CONFIG_MACH_VALENTE_WX) += display/board-valente_wx-panel.o
 obj-$(CONFIG_MACH_VALENTE_WX) += board-valente_wx-audio.o
-obj-$(CONFIG_MACH_VALENTE_WX) += htc_bdaddress.o htc_util.o
+obj-$(CONFIG_MACH_VALENTE_WX) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_VALENTE_WX) += htc_util.o
+endif
 
 obj-$(CONFIG_MACH_VALENTE_WX_C9) += board-valente_wx_c9.o board-valente_wx_c9-regulator.o board-valente_wx_c9-gpio.o
 obj-$(CONFIG_MACH_VALENTE_WX_C9) += board-valente_wx_c9-keypad.o
 obj-$(CONFIG_MACH_VALENTE_WX_C9) += display/board-valente_wx_c9-panel.o
 obj-$(CONFIG_MACH_VALENTE_WX_C9) += board-valente_wx_c9-audio.o
-obj-$(CONFIG_MACH_VALENTE_WX_C9) += htc_bdaddress.o htc_util.o
+obj-$(CONFIG_MACH_VALENTE_WX_C9) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_VALENTE_WX_C9) += htc_util.o
+endif
 
 ifeq ($(CONFIG_WIMAX),y)
 obj-$(CONFIG_MACH_VALENTE_WX) += board-valente_wx-mmc.o  board-common-wimax.o
@@ -318,16 +341,25 @@ obj-$(CONFIG_MACH_SAPPHIRE) += board-sapphire-rfkill.o msm_vibrator.o
 obj-$(CONFIG_MACH_ELITE) += board-elite.o board-elite-regulator.o board-elite-gpio.o
 obj-$(CONFIG_MACH_ELITE) += board-elite-keypad.o
 obj-$(CONFIG_MACH_ELITE) += board-elite-audio.o
-obj-$(CONFIG_MACH_ELITE) += htc_bdaddress.o htc_util.o
+obj-$(CONFIG_MACH_ELITE) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_ELITE) += htc_util.o
+endif
 
 obj-$(CONFIG_MACH_KNIGHT) += board-knight.o board-knight-regulator.o board-knight-gpio.o
 obj-$(CONFIG_MACH_KNIGHT) += board-knight-keypad.o
 obj-$(CONFIG_MACH_KNIGHT) += board-knight-audio.o
-obj-$(CONFIG_MACH_KNIGHT) += htc_bdaddress.o htc_util.o
+obj-$(CONFIG_MACH_KNIGHT) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_KNIGHT) += htc_util.o
+endif
 
 obj-$(CONFIG_MACH_ELITE_ULK) += board-elite_ulk.o board-elite_ulk-regulator.o board-elite_ulk-gpio.o
 obj-$(CONFIG_MACH_ELITE_ULK) += board-elite_ulk-keypad.o
-obj-$(CONFIG_MACH_ELITE_ULK) += board-elite_ulk-audio.o htc_util.o
+obj-$(CONFIG_MACH_ELITE_ULK) += board-elite_ulk-audio.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_ELITE_ULK) += htc_util.o
+endif
 
 # MSM8x60 boards
 obj-$(CONFIG_MACH_PYRAMID) += board-pyramid.o
@@ -350,13 +382,20 @@ obj-$(CONFIG_MACH_SHOOTER) += board-shooter-mmc.o board-shooter-wifi.o
 obj-$(CONFIG_MACH_HOLIDAY) += board-holiday.o mdm.o
 obj-$(CONFIG_MACH_HOLIDAY) += board-holiday-audio.o
 obj-$(CONFIG_MACH_HOLIDAY) += board-holiday-keypad.o
-obj-$(CONFIG_MACH_HOLIDAY) += htc_bdaddress.o htc_sleep_clk.o board-holiday-rfkill.o htc_fmtx_rfkill.o htc_util.o
+obj-$(CONFIG_MACH_HOLIDAY) += htc_bdaddress.o htc_sleep_clk.o board-holiday-rfkill.o htc_fmtx_rfkill.o
 obj-$(CONFIG_MACH_HOLIDAY) += board-holiday-mmc.o board-holiday-wifi.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_HOLIDAY) += htc_util.o
+endif
+
 obj-$(CONFIG_MACH_VIGOR) += board-vigor.o mdm.o
 obj-$(CONFIG_MACH_VIGOR) += board-vigor-audio.o
 obj-$(CONFIG_MACH_VIGOR) += board-vigor-keypad.o
-obj-$(CONFIG_MACH_VIGOR) += htc_bdaddress.o htc_sleep_clk.o board-vigor-rfkill.o htc_fmtx_rfkill.o htc_util.o
+obj-$(CONFIG_MACH_VIGOR) += htc_bdaddress.o htc_sleep_clk.o board-vigor-rfkill.o htc_fmtx_rfkill.o
 obj-$(CONFIG_MACH_VIGOR) += board-vigor-mmc.o board-vigor-wifi.o
+ifdef CONFIG_HTC_UTIL
+obj-$(CONFIG_MACH_VIGOR) += htc_util.o
+endif
 
 # MSM7x30 boards
 obj-$(CONFIG_MACH_RUNNYMEDE) += board-runnymede.o

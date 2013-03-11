@@ -1203,7 +1203,9 @@ int msm_pm_idle_enter(enum msm_pm_sleep_mode sleep_mode)
 #ifdef CONFIG_MSM_IDLE_STATS
 	msm_pm_add_stat(exit_stat, time);
 	if (get_kernel_flag() & KERNEL_FLAG_PM_MONITOR)
+#ifdef CONFIG_HTC_UTIL
 		htc_idle_stat_add(sleep_mode, (u32)time/1000);
+#endif
 #endif
 
 	do_div(time, 1000);
