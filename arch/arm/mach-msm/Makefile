@@ -305,19 +305,27 @@ obj-$(CONFIG_MACH_MPQ8064_HRD) += board-8064-all.o board-8064-regulator.o
 obj-$(CONFIG_MACH_MPQ8064_DTV) += board-8064-all.o board-8064-regulator.o
 obj-$(CONFIG_MACH_MONARUDO) += board-monarudo-all.o board-monarudo-regulator.o
 
+ifdef CONFIG_HTC_UTIL
 obj-$(CONFIG_MACH_MONARUDO) += htc_util.o
+endif
 obj-$(CONFIG_MACH_ELITE) += board-elite.o board-elite-regulator.o board-elite-gpiomux.o board-elite-storage.o board-elite-audio.o board-elite-camera.o
 obj-$(CONFIG_MACH_ELITE) += board-elite-keypad.o
 obj-$(CONFIG_MACH_ELITE) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
 obj-$(CONFIG_MACH_ELITE) += htc_util.o
+endif
 obj-$(CONFIG_MACH_VILLE) += board-ville.o board-ville-regulator.o board-ville-gpiomux.o board-ville-storage.o board-ville-audio.o board-ville-camera.o
 obj-$(CONFIG_MACH_VILLE) += board-ville-keypad.o
 obj-$(CONFIG_MACH_VILLE) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
 obj-$(CONFIG_MACH_VILLE) += htc_util.o
+endif
 obj-$(CONFIG_MACH_JET) += board-jet.o board-jet-regulator.o board-jet-gpiomux.o board-jet-storage.o board-jet-audio.o board-jet-camera.o
 obj-$(CONFIG_MACH_JET) += board-jet-keypad.o
 obj-$(CONFIG_MACH_JET) += htc_bdaddress.o
+ifdef CONFIG_HTC_UTIL
 obj-$(CONFIG_MACH_JET) += htc_util.o
+endif
 obj-$(CONFIG_ARCH_MSM9615) += board-9615.o devices-9615.o board-9615-regulator.o board-9615-gpiomux.o board-9615-storage.o board-9615-display.o
 obj-$(CONFIG_ARCH_MSM9615) += clock-local.o clock-9615.o acpuclock-9615.o clock-rpm.o clock-pll.o
 obj-$(CONFIG_ARCH_MSM8974) += board-8974.o board-dt.o board-8974-regulator.o board-8974-gpiomux.o
