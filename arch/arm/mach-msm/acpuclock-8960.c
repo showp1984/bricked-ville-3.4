@@ -24,6 +24,10 @@
 #include <linux/cpu.h>
 #include <linux/regulator/consumer.h>
 #include <linux/platform_device.h>
+#ifdef CONFIG_DEBUG_FS
+#include <linux/seq_file.h>
+#include <linux/debugfs.h>
+#endif
 
 #include <asm/mach-types.h>
 #include <asm/cpu.h>
@@ -122,6 +126,10 @@ static void set_acpuclk_L2_freq_foot_print(unsigned khz)
 #define LVL_LOW	RPM_VREG_CORNER_LOW
 #define LVL_NOM	RPM_VREG_CORNER_NOMINAL
 #define LVL_HIGH	RPM_VREG_CORNER_HIGH
+
+#ifdef CONFIG_DEBUG_FS
+static unsigned int krait_chip_variant = 0, krait_version = 0;
+#endif
 
 enum scalables {
 	CPU0 = 0,
@@ -1313,7 +1321,7 @@ out:
 	return rc;
 }
 
-static void __cpuinit hfpll_init(struct scalable *sc, struct core_speed *tgt_s)
+static void hfpll_init(struct scalable *sc, struct core_speed *tgt_s)
 {
 	pr_debug("Initializing HFPLL%d\n", sc - scalable);
 
@@ -1333,7 +1341,7 @@ static void __cpuinit hfpll_init(struct scalable *sc, struct core_speed *tgt_s)
 	hfpll_enable(sc, 0);
 }
 
-static void __cpuinit regulator_init(int cpu, struct acpu_level *lvl)
+static void regulator_init(int cpu, struct acpu_level *lvl)
 {
 	int ret;
 	struct scalable *sc = &scalable[cpu];
@@ -1391,7 +1399,7 @@ static void __cpuinit regulator_init(int cpu, struct acpu_level *lvl)
 	sc->regulators_initialized = true;
 }
 
-static void __cpuinit init_clock_sources(struct scalable *sc,
+static void init_clock_sources(struct scalable *sc,
 				      struct core_speed *tgt_s)
 {
 	uint32_t regval;
@@ -1415,7 +1423,7 @@ static void __cpuinit init_clock_sources(struct scalable *sc,
 	sc->current_speed = tgt_s;
 }
 
-static void __cpuinit per_cpu_init(void *data)
+static void per_cpu_init(void *data)
 {
 	int cpu = smp_processor_id();
 
@@ -1476,7 +1484,7 @@ static void __init cpufreq_table_init(void) {}
 #endif
 
 #define HOT_UNPLUG_KHZ STBY_KHZ
-static int __cpuinit acpuclock_cpu_callback(struct notifier_block *nfb,
+static int acpuclock_cpu_callback(struct notifier_block *nfb,
 					    unsigned long action, void *hcpu)
 {
 	static int prev_khz[NR_CPUS];
@@ -1528,7 +1536,7 @@ static int __cpuinit acpuclock_cpu_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
-static struct notifier_block __cpuinitdata acpuclock_cpu_notifier = {
+static struct notifier_block acpuclock_cpu_notifier = {
 	.notifier_call = acpuclock_cpu_callback,
 };
 
@@ -1603,6 +1611,7 @@ static enum pvs __init get_pvs(void)
 static void __init select_freq_plan(void)
 {
 	struct acpu_level *l;
+	int tbl_selected = 0;
 
 	
 	if (cpu_is_msm8960()) {
@@ -1613,11 +1622,16 @@ static void __init select_freq_plan(void)
 			acpu_freq_tbl = acpu_freq_tbl_8960_v1[pvs_id];
 			l2_freq_tbl = l2_freq_tbl_8960_kraitv1;
 			l2_freq_tbl_size = ARRAY_SIZE(l2_freq_tbl_8960_kraitv1);
+			tbl_selected = 1;
 		} else {
 			acpu_freq_tbl = acpu_freq_tbl_8960_v2[pvs_id];
 			l2_freq_tbl = l2_freq_tbl_8960_kraitv2;
 			l2_freq_tbl_size = ARRAY_SIZE(l2_freq_tbl_8960_kraitv2);
+			tbl_selected = 2;
 		}
+#ifdef CONFIG_DEBUG_FS
+                krait_version = tbl_selected;
+#endif
 	} else if (cpu_is_apq8064()) {
 		enum pvs pvs_id = get_pvs();
 
@@ -1666,6 +1680,44 @@ static struct acpuclk_data acpuclk_8960_data = {
 	.power_collapse_khz = STBY_KHZ,
 	.wait_for_irq_khz = STBY_KHZ,
 };
+
+#ifdef CONFIG_DEBUG_FS
+static int krait_variant_debugfs_show(struct seq_file *s, void *data)
+{
+        seq_printf(s, "Your cpu is: \n");
+        seq_printf(s, "[%s] Krait Version 1 \n", ((krait_version == 1) ? "X" : " "));
+	seq_printf(s, "[%s] Krait Version 2 \n", ((krait_version == 2) ? "X" : " "));
+	seq_printf(s, "Your krait chip uses table: \n");
+	seq_printf(s, "[%s] SLOW \n", ((krait_chip_variant == PVS_SLOW) ? "X" : " "));
+	seq_printf(s, "[%s] NOMINAL \n", ((krait_chip_variant == PVS_NOM) ? "X" : " "));
+	seq_printf(s, "[%s] FAST \n", ((krait_chip_variant == PVS_FAST) ? "X" : " "));
+	seq_printf(s, "[%s] FASTER \n", ((krait_chip_variant == PVS_FASTER) ? "X" : " "));
+
+	return 0;
+}
+
+static int krait_variant_debugfs_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, krait_variant_debugfs_show, inode->i_private);
+}
+
+static const struct file_operations krait_variant_debugfs_fops = {
+	.open		= krait_variant_debugfs_open,
+	.read		= seq_read,
+	.llseek		= seq_lseek,
+	.release	= single_release,
+};
+
+static int __init krait_variant_debugfs_init(void) {
+        struct dentry *d;
+        d = debugfs_create_file("krait_variant", S_IRUGO, NULL, NULL,
+        &krait_variant_debugfs_fops);
+        if (!d)
+                return -ENOMEM;
+        return 0;
+}
+late_initcall(krait_variant_debugfs_init);
+#endif
 
 static int __init acpuclk_8960_probe(struct platform_device *pdev)
 {

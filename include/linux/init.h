@@ -35,12 +35,13 @@
 #define __devexitdata    __section(.devexit.data)
 #define __devexitconst   __section(.devexit.rodata)
 
-#define __cpuinit        __section(.cpuinit.text) __cold notrace
-#define __cpuinitdata    __section(.cpuinit.data)
-#define __cpuinitconst   __section(.cpuinit.rodata)
-#define __cpuexit        __section(.cpuexit.text) __exitused __cold notrace
-#define __cpuexitdata    __section(.cpuexit.data)
-#define __cpuexitconst   __section(.cpuexit.rodata)
+/* Used for HOTPLUG_CPU */
+#define __cpuinit        __cold
+#define __cpuinitdata
+#define __cpuinitconst
+#define __cpuexit        __exitused __cold
+#define __cpuexitdata
+#define __cpuexitconst
 
 #define __meminit        __section(.meminit.text) __cold notrace
 #define __meminitdata    __section(.meminit.data)
