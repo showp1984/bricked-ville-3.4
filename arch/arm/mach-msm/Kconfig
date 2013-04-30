@@ -441,6 +441,13 @@ config PERFLOCK
         default n
         bool "HTC Performance Lock"
 
+config PERFLOCK_HACK
+        depends on PERFLOCK
+        default y
+        bool "HTC Performance Lock HACK"
+	    help
+	      Basically removes Perflock but allows insertion of precompiled HTC modules
+
 config PERFLOCK_BOOT_LOCK
         depends on PERFLOCK
         depends on ARCH_APQ8064 || ARCH_MSM8960 || ARCH_MSM8930 || ARCH_MSM8X60 || ARCH_QSD8X50 || ARCH_MSM7X30 || ARCH_MSM7X00A || ARCH_MSM7227 || ARCH_MSM7225

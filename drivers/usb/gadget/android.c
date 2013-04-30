@@ -81,7 +81,7 @@ static int os_type;
 #include <linux/usb/htc_info.h>
 #include "f_projector.c"
 
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 #include <mach/perflock.h>
 #endif
 
@@ -167,7 +167,7 @@ static struct android_dev *_android_dev;
 static int android_bind_config(struct usb_configuration *c);
 static void android_unbind_config(struct usb_configuration *c);
 
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 static struct perf_lock android_usb_perf_lock;
 #endif
 
@@ -255,7 +255,7 @@ static void android_work(struct work_struct *data)
 	struct android_usb_function *f;
 	int count = 0;
 
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 	if (is_perf_lock_active(&android_usb_perf_lock)) {
 		pr_info("Performance lock released\n");
 		perf_unlock(&android_usb_perf_lock);
@@ -286,7 +286,7 @@ static void android_work(struct work_struct *data)
 	spin_unlock_irqrestore(&cdev->lock, flags);
 
 	if (cdev->config && count) {
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 		if (!is_perf_lock_active(&android_usb_perf_lock)) {
 			pr_info("Performance lock requested\n");
 			perf_lock(&android_usb_perf_lock);
@@ -983,12 +983,12 @@ static struct android_usb_function ccid_function = {
 static int mtp_function_init(struct android_usb_function *f,
 		struct usb_composite_dev *cdev)
 {
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 	struct android_dev *dev = _android_dev;
 #endif
 	int ret;
 	ret = mtp_setup();
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 	mtp_setup_perflock(dev->pdata->mtp_perf_lock_on?true:false);
 #endif
 	return ret;
@@ -2517,7 +2517,7 @@ static int __init init(void)
 
 	_android_dev = dev;
 
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 	perf_lock_init(&android_usb_perf_lock, TYPE_PERF_LOCK, PERF_LOCK_LOW, "android_usb");
 #endif
 
