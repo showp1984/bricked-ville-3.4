@@ -25,7 +25,6 @@
 
 #include <linux/earlysuspend.h>
 #include <linux/init.h>
-#include <linux/cpufreq.h>
 #include <linux/workqueue.h>
 #include <linux/completion.h>
 #include <linux/cpu.h>
@@ -42,6 +41,22 @@
 #define MSM_MPDEC_DELAY                 100
 #define MSM_MPDEC_PAUSE                 10000
 #define MSM_MPDEC_IDLE_FREQ             486000
+
+struct global_attr {
+	struct attribute attr;
+	ssize_t (*show)(struct kobject *kobj,
+			struct attribute *attr, char *buf);
+	ssize_t (*store)(struct kobject *a, struct attribute *b,
+			 const char *c, size_t count);
+};
+
+#define define_one_global_ro(_name)		\
+static struct global_attr _name =		\
+__ATTR(_name, 0444, show_##_name, NULL)
+
+#define define_one_global_rw(_name)		\
+static struct global_attr _name =		\
+__ATTR(_name, 0644, show_##_name, store_##_name)
 
 enum {
     MSM_MPDEC_DISABLED = 0,
