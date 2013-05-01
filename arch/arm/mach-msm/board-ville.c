@@ -38,6 +38,7 @@
 #include <linux/leds.h>
 #include <linux/leds-pm8xxx.h>
 #include <linux/msm_tsens.h>
+#include <linux/msm_thermal.h>
 #include <linux/proc_fs.h>
 #include <linux/cm3629.h>
 #include <asm/mach-types.h>
@@ -4717,6 +4718,29 @@ static struct tsens_platform_data msm_tsens_pdata  = {
 		.tsens_num_sensor	= 5,
 };
 
+static struct platform_device msm_tsens_device = {
+	.name   = "tsens8960-tm",
+	.id = -1,
+};
+
+static struct msm_thermal_data msm_thermal_pdata = {
+        .sensor_id = 0,
+        .poll_ms = 150,
+        .shutdown_temp = 78,
+
+        .allowed_max_high = 74,
+        .allowed_max_low = 70,
+        .allowed_max_freq = 384000,
+
+        .allowed_mid_high = 81,
+        .allowed_mid_low = 66,
+        .allowed_mid_freq = 810000,
+
+        .allowed_low_high = 69,
+        .allowed_low_low = 63,
+        .allowed_low_freq = 1350000,
+};
+
 #ifdef CONFIG_MSM_FAKE_BATTERY
 static struct platform_device fish_battery_device = {
 	.name = "fish_battery",
@@ -4856,6 +4880,7 @@ static struct platform_device *common_devices[] __initdata = {
 #ifdef CONFIG_HTC_BATT_8960
 	&htc_battery_pdev,
 #endif
+	&msm_tsens_device,
 };
 
 static struct platform_device *ville_devices[] __initdata = {
@@ -5718,6 +5743,7 @@ static void __init ville_init(void)
 		pr_err("meminfo_init() failed!\n");
 
 	msm_tsens_early_init(&msm_tsens_pdata);
+	msm_thermal_init(&msm_thermal_pdata);
 	BUG_ON(msm_rpm_init(&msm_rpm_data));
 	BUG_ON(msm_rpmrs_levels_init(msm_rpmrs_levels,
 				ARRAY_SIZE(msm_rpmrs_levels)));
