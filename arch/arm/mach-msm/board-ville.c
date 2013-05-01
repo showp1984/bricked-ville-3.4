@@ -120,7 +120,7 @@
 #include "linux/mfd/pm8xxx/pm8921-charger.h"
 #endif
 
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 #include <mach/perflock.h>
 #endif
 
@@ -3015,7 +3015,7 @@ static struct msm_spm_platform_data msm_spm_data[] __initdata = {
 	},
 };
 
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 static unsigned ville_perf_acpu_table[] = {
 	594000000, 
 	810000000, 
@@ -3596,10 +3596,20 @@ static struct platform_device msm_tsens_device = {
 
 static struct msm_thermal_data msm_thermal_pdata = {
         .sensor_id = 0,
-        .poll_ms = 1000,
-        .limit_temp = 60,
-        .temp_hysteresis = 10,
-        .limit_freq = 918000,
+        .poll_ms = 150,
+        .shutdown_temp = 78,
+
+        .allowed_max_high = 74,
+        .allowed_max_low = 70,
+        .allowed_max_freq = 384000,
+
+        .allowed_mid_high = 71,
+        .allowed_mid_low = 66,
+        .allowed_mid_freq = 810000,
+
+        .allowed_low_high = 69,
+        .allowed_low_low = 63,
+        .allowed_low_freq = 1350000,
 };
 
 #ifdef CONFIG_MSM_FAKE_BATTERY
@@ -3736,7 +3746,7 @@ static struct platform_device *common_devices[] __initdata = {
 	&htc_battery_pdev,
 #endif
 	&msm_tsens_device,
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 	&msm8960_device_perf_lock,
 #endif
 };

@@ -19,7 +19,7 @@
 
 #include "power.h"
 
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 #include <mach/perflock.h>
 #endif
 
@@ -463,7 +463,7 @@ power_attr(wake_lock);
 power_attr(wake_unlock);
 #endif
 
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 static struct perf_lock user_cpu_perf_lock;
 static struct perf_lock user_cpu_ceiling_lock;
 static struct perf_lock user_perf_lock[PERF_LOCK_INVALID];
@@ -797,7 +797,7 @@ static struct attribute *g[] = {
 	&state_onchg_attr.attr,
 #endif
 #endif
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 	&perflock_attr.attr,
 	&cpufreq_ceiling_attr.attr,
 	&launch_event_attr.attr,
@@ -833,7 +833,7 @@ static inline int pm_start_workqueue(void) { return 0; }
 static int __init pm_init(void)
 {
 	int error = pm_start_workqueue();
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 	int i;
 	static char ceil_buf[PERF_LOCK_INVALID][38];
 	static char perf_buf[PERF_LOCK_INVALID][24];
@@ -850,7 +850,7 @@ static int __init pm_init(void)
 
 
 	power_kobj = kobject_create_and_add("power", NULL);
-#ifdef CONFIG_PERFLOCK
+#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
 	perf_lock_init(&user_cpu_perf_lock, TYPE_PERF_LOCK, PERF_LOCK_HIGHEST, "User CPU Highest Perflock"); 
 	perf_lock_init(&user_cpu_ceiling_lock, TYPE_CPUFREQ_CEILING, PERF_LOCK_HIGH, "User CPU High cpufreq_ceiling lock"); 
 	for (i = PERF_LOCK_LOWEST; i < PERF_LOCK_INVALID; i++) {
