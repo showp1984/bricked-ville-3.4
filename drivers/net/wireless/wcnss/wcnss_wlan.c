@@ -435,7 +435,7 @@ static struct miscdevice wcnss_misc = {
 };
 #endif 
 
-#if defined(CONFIG_PERFLOCK) && !defined(CONFIG_PERFLOCK_HACK)
+#if defined(CONFIG_PERFLOCK)
 #include <mach/perflock.h>
 struct perf_lock qcom_wlan_perf_lock;
 EXPORT_SYMBOL(qcom_wlan_perf_lock);
