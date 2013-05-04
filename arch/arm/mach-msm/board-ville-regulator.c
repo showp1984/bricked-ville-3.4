@@ -478,15 +478,15 @@ struct platform_device msm8960_device_rpm_regulator __devinitdata = {
 struct regulator_init_data msm_saw_regulator_pdata_s5 =
 	/*	      ID  vreg_name	       min_uV   max_uV */
 #ifndef CONFIG_CPU_OVERCLOCK
-	SAW_VREG_INIT(S5, "8921_s5",	       800000, 1300000);
+	SAW_VREG_INIT(S5, "8921_s5",	       700000, 1300000);
 #else
-	SAW_VREG_INIT(S5, "8921_s5",	       800000, 1450000);
+	SAW_VREG_INIT(S5, "8921_s5",	       700000, 1425000);
 #endif
 struct regulator_init_data msm_saw_regulator_pdata_s6 =
 #ifndef CONFIG_CPU_OVERCLOCK
-	SAW_VREG_INIT(S6, "8921_s6",	       800000, 1300000);
+	SAW_VREG_INIT(S6, "8921_s6",	       700000, 1300000);
 #else
-	SAW_VREG_INIT(S6, "8921_s6",	       800000, 1450000);
+	SAW_VREG_INIT(S6, "8921_s6",	       700000, 1425000);
 #endif
 
 /* PM8921 regulator constraints */
