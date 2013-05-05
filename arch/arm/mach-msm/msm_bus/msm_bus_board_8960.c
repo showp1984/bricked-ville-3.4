@@ -59,9 +59,8 @@ enum msm_bus_8960_master_ports_type {
 	MSM_BUS_MASTER_PORT_MDP_PORT0 = 0,
 	MSM_BUS_MASTER_PORT_MDP_PORT1,
 	MSM_BUS_MMSS_MASTER_PORT_UNUSED_2,
-	MSM_BUS_MASTER_PORT_GRAPHICS_3D_PORT0,
 	MSM_BUS_MASTER_PORT_ROTATOR,
-	MSM_BUS_MASTER_PORT_GRAPHICS_3D_PORT1,
+	MSM_BUS_MASTER_PORT_GRAPHICS_3D,
 	MSM_BUS_MASTER_PORT_JPEG_DEC,
 	MSM_BUS_MASTER_PORT_GRAPHICS_2D_CORE0,
 	MSM_BUS_MASTER_PORT_VFE,
@@ -424,8 +423,7 @@ static int mport_mdp[] = {
 };
 static int mport_mdp1[] = {MSM_BUS_MASTER_PORT_MDP_PORT1,};
 static int mport_rotator[] = {MSM_BUS_MASTER_PORT_ROTATOR,};
-static int mport_graphics_3d_port0[] = {MSM_BUS_MASTER_PORT_GRAPHICS_3D_PORT0,};
-static int mport_graphics_3d_port1[] = {MSM_BUS_MASTER_PORT_GRAPHICS_3D_PORT1,};
+static int mport_graphics_3d[] = {MSM_BUS_MASTER_PORT_GRAPHICS_3D,};
 static int mport_jpeg_dec[] = {MSM_BUS_MASTER_PORT_JPEG_DEC,};
 static int mport_graphics_2d_core0[] = {MSM_BUS_MASTER_PORT_GRAPHICS_2D_CORE0,};
 static int mport_vfe[] = {MSM_BUS_MASTER_PORT_VFE,};
@@ -476,15 +474,8 @@ static struct msm_bus_node_info mmss_fabric_info[]  = {
 	},
 	{
 		.id = MSM_BUS_MASTER_GRAPHICS_3D,
-		.masterp = mport_graphics_3d_port0,
-		.num_mports = ARRAY_SIZE(mport_graphics_3d_port0),
-		.tier = tier2,
-		.num_tiers = ARRAY_SIZE(tier2),
-	},
-	{
-		.id = MSM_BUS_MASTER_GRAPHICS_3D_PORT1,
-		.masterp = mport_graphics_3d_port1,
-		.num_mports = ARRAY_SIZE(mport_graphics_3d_port1),
+		.masterp = mport_graphics_3d,
+		.num_mports = ARRAY_SIZE(mport_graphics_3d),
 		.tier = tier2,
 		.num_tiers = ARRAY_SIZE(tier2),
 	},
