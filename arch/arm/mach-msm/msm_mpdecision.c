@@ -191,8 +191,8 @@ static void mpdec_cpu_up(int cpu) {
         per_cpu(msm_mpdec_cpudata, cpu).on_time = ktime_to_ms(ktime_get());
         per_cpu(msm_mpdec_cpudata, cpu).online = true;
         per_cpu(msm_mpdec_cpudata, cpu).times_cpu_hotplugged += 1;
-        pr_info(MPDEC_TAG"CPU[%d] off->on | Mask=[%d%d%d%d]\n",
-                cpu, cpu_online(0), cpu_online(1), cpu_online(2), cpu_online(3));
+        pr_info(MPDEC_TAG"CPU[%d] off->on | Mask=[%d%d]\n",
+                cpu, cpu_online(0), cpu_online(1));
         mutex_unlock(&per_cpu(msm_mpdec_cpudata, cpu).hotplug_mutex);
     }
 }
@@ -207,8 +207,8 @@ static void mpdec_cpu_down(int cpu) {
         per_cpu(msm_mpdec_cpudata, cpu).online = false;
         per_cpu(msm_mpdec_cpudata, cpu).on_time_total += on_time;
         per_cpu(msm_mpdec_cpudata, cpu).times_cpu_unplugged += 1;
-        pr_info(MPDEC_TAG"CPU[%d] on->off | Mask=[%d%d%d%d] | time online: %llu\n",
-                cpu, cpu_online(0), cpu_online(1), cpu_online(2), cpu_online(3), on_time);
+        pr_info(MPDEC_TAG"CPU[%d] on->off | Mask=[%d%d] | time online: %llu\n",
+                cpu, cpu_online(0), cpu_online(1), on_time);
         mutex_unlock(&per_cpu(msm_mpdec_cpudata, cpu).hotplug_mutex);
     }
 }
@@ -594,8 +594,8 @@ static void msm_mpdec_late_resume(struct early_suspend *h) {
             }
         }
 
-        pr_info(MPDEC_TAG"Screen -> on. Activated mpdecision. | Mask=[%d%d%d%d]\n",
-                cpu_online(0), cpu_online(1), cpu_online(2), cpu_online(3));
+        pr_info(MPDEC_TAG"Screen -> on. Activated mpdecision. | Mask=[%d%d]\n",
+                cpu_online(0), cpu_online(1));
     } else {
         pr_info(MPDEC_TAG"Screen -> on\n");
     }
