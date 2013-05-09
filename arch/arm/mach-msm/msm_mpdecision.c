@@ -25,6 +25,8 @@
 
 #include <linux/earlysuspend.h>
 #include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
 #include <linux/cpufreq.h>
 #include <linux/workqueue.h>
 #include <linux/completion.h>
