@@ -28,7 +28,6 @@
 #include <linux/cpu.h>
 #include <linux/cpumask.h>
 
-#include "pm.h"
 #include "clock.h"
 #include "acpuclock.h"
 
