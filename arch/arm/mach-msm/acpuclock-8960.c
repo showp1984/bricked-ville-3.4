@@ -180,6 +180,14 @@ enum vregs {
 	NUM_VREG
 };
 
+enum pvs {
+	PVS_SLOW,
+	PVS_NOM,
+	PVS_FAST,
+	PVS_FASTER,
+	NUM_PVS
+};
+
 struct vreg {
 	const char name[15];
 	const unsigned int max_vdd;
@@ -1474,21 +1482,33 @@ static struct acpu_level * __init select_freq_plan(void)
 			pr_info("ACPU PVS: Slow\n");
 			v1 = acpu_freq_tbl_8960_kraitv1_slow;
 			v2 = acpu_freq_tbl_8960_kraitv2_slow;
+#ifdef CONFIG_DEBUG_FS
+            krait_chip_variant = PVS_SLOW;
+#endif
 			break;
 		case 0x1:
 			pr_info("ACPU PVS: Nominal\n");
 			v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
 			v2 = acpu_freq_tbl_8960_kraitv2_nom;
+#ifdef CONFIG_DEBUG_FS
+            krait_chip_variant = PVS_NOM;
+#endif
 			break;
 		case 0x3:
 			pr_info("ACPU PVS: Fast\n");
 			v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
 			v2 = acpu_freq_tbl_8960_kraitv2_fast;
+#ifdef CONFIG_DEBUG_FS
+            krait_chip_variant = PVS_FAST;
+#endif
 			break;
 		default:
 			pr_warn("ACPU PVS: Unknown. Defaulting to slow.\n");
 			v1 = acpu_freq_tbl_8960_kraitv1_slow;
 			v2 = acpu_freq_tbl_8960_kraitv2_slow;
+#ifdef CONFIG_DEBUG_FS
+            krait_chip_variant = PVS_SLOW;
+#endif
 			break;
 		}
 
