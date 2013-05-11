@@ -1736,7 +1736,7 @@ This function check the PAD to which the current Interrupt belongs to.
 bool_t	Yushan_Check_Pad_For_IntrID(uint8_t	bInterruptId)
 {
 
-	uint8_t		bFirstIndexForSet[] = {1, 5, 11, 17, 23, 27, 58, 62, 69, 77, 79, 82, 83};
+	uint8_t		bFirstIndexForSet[] = EVENT_FIRST_INDEXFORSET;
 	uint8_t		bIntrSetID = 0;
 	uint16_t	uwIntrSetsDivertedToPad1 = 0;
 
