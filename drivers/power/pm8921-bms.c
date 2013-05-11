@@ -1361,7 +1361,7 @@ EXPORT_SYMBOL(pm8921_bms_get_vsense_avg);
 int pm8921_bms_get_battery_current(int *result_ua)
 {
 	unsigned long flags;
-	int vsense;
+	int vsense = 0;
 
 	if (!the_chip) {
 		pr_err("called before initialization\n");
@@ -2398,7 +2398,7 @@ static int dump_cc_uah(void)
 int prev_cc_uah = 0;
 static int pm8921_bms_suspend(struct device *dev)
 {
-	u64 val;
+	u64 val = 0;
 	dump_cc_uah();
 	get_reg((void *)BMS_TOLERANCES, &val);
 	pr_info("BMS_TOLERANCES = 0x%02llx\n", val);
@@ -2407,7 +2407,7 @@ static int pm8921_bms_suspend(struct device *dev)
 
 static int pm8921_bms_resume(struct device *dev)
 {
-	u64 val;
+	u64 val = 0;
 	dump_cc_uah();
 	get_reg((void *)BMS_TOLERANCES, &val);
 	pr_info("BMS_TOLERANCES = 0x%02llx\n", val);
