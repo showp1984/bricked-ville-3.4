@@ -552,7 +552,7 @@ static struct _cache_attr subcaches =
 #endif /* CONFIG_AMD_NB */
 
 static int
-__cpuinit cpuid4_cache_lookup_regs(int index,
+cpuid4_cache_lookup_regs(int index,
 				   struct _cpuid4_info_regs *this_leaf)
 {
 	union _cpuid4_leaf_eax	eax;
@@ -854,7 +854,7 @@ static void free_cache_attributes(unsigned int cpu)
 }
 
 static int
-__cpuinit cpuid4_cache_lookup(int index, struct _cpuid4_info *this_leaf)
+cpuid4_cache_lookup(int index, struct _cpuid4_info *this_leaf)
 {
 	struct _cpuid4_info_regs *leaf_regs =
 		(struct _cpuid4_info_regs *)this_leaf;
