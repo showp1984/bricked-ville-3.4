@@ -184,7 +184,6 @@ enum pvs {
 	PVS_SLOW,
 	PVS_NOM,
 	PVS_FAST,
-	PVS_FASTER,
 	NUM_PVS
 };
 
@@ -1602,14 +1601,13 @@ static struct acpuclk_data acpuclk_8960_data = {
 #ifdef CONFIG_DEBUG_FS
 static int krait_variant_debugfs_show(struct seq_file *s, void *data)
 {
-        seq_printf(s, "Your cpu is: \n");
-        seq_printf(s, "[%s] Krait Version 1 \n", ((krait_version == 1) ? "X" : " "));
+    seq_printf(s, "Your cpu is: \n");
+    seq_printf(s, "[%s] Krait Version 1 \n", ((krait_version == 1) ? "X" : " "));
 	seq_printf(s, "[%s] Krait Version 2 \n", ((krait_version == 2) ? "X" : " "));
 	seq_printf(s, "Your krait chip uses table: \n");
 	seq_printf(s, "[%s] SLOW \n", ((krait_chip_variant == PVS_SLOW) ? "X" : " "));
 	seq_printf(s, "[%s] NOMINAL \n", ((krait_chip_variant == PVS_NOM) ? "X" : " "));
 	seq_printf(s, "[%s] FAST \n", ((krait_chip_variant == PVS_FAST) ? "X" : " "));
-	seq_printf(s, "[%s] FASTER \n", ((krait_chip_variant == PVS_FASTER) ? "X" : " "));
 
 	return 0;
 }
