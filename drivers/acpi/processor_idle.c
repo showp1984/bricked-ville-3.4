@@ -1089,7 +1089,7 @@ int acpi_processor_cst_has_changed(struct acpi_processor *pr)
 	return ret;
 }
 
-int __cpuinit acpi_processor_power_init(struct acpi_processor *pr,
+int acpi_processor_power_init(struct acpi_processor *pr,
 			      struct acpi_device *device)
 {
 	acpi_status status = 0;

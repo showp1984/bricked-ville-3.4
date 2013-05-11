@@ -59,7 +59,7 @@ void __init setup_cpu_local_masks(void)
 	alloc_bootmem_cpumask_var(&cpu_sibling_setup_mask);
 }
 
-static void __cpuinit default_init(struct cpuinfo_x86 *c)
+static void default_init(struct cpuinfo_x86 *c)
 {
 #ifdef CONFIG_X86_64
 	cpu_detect_cache_sizes(c);
@@ -209,12 +209,12 @@ static inline int flag_is_changeable_p(u32 flag)
 }
 
 /* Probe for the CPUID instruction */
-static int __cpuinit have_cpuid_p(void)
+static int have_cpuid_p(void)
 {
 	return flag_is_changeable_p(X86_EFLAGS_ID);
 }
 
-static void __cpuinit squash_the_stupid_serial_number(struct cpuinfo_x86 *c)
+static void squash_the_stupid_serial_number(struct cpuinfo_x86 *c)
 {
 	unsigned long lo, hi;
 
@@ -263,7 +263,7 @@ static __init int setup_disable_smep(char *arg)
 }
 __setup("nosmep", setup_disable_smep);
 
-static __cpuinit void setup_smep(struct cpuinfo_x86 *c)
+static void setup_smep(struct cpuinfo_x86 *c)
 {
 	if (cpu_has(c, X86_FEATURE_SMEP)) {
 		if (unlikely(disable_smep)) {
@@ -292,7 +292,7 @@ cpuid_dependent_features[] = {
 	{ 0, 0 }
 };
 
-static void __cpuinit filter_cpuid_features(struct cpuinfo_x86 *c, bool warn)
+static void filter_cpuid_features(struct cpuinfo_x86 *c, bool warn)
 {
 	const struct cpuid_dependent_feature *df;
 
@@ -382,7 +382,7 @@ void switch_to_new_gdt(int cpu)
 
 static const struct cpu_dev *__cpuinitdata cpu_devs[X86_VENDOR_NUM] = {};
 
-static void __cpuinit get_model_name(struct cpuinfo_x86 *c)
+static void get_model_name(struct cpuinfo_x86 *c)
 {
 	unsigned int *v;
 	char *p, *q;
@@ -411,7 +411,7 @@ static void __cpuinit get_model_name(struct cpuinfo_x86 *c)
 	}
 }
 
-void __cpuinit cpu_detect_cache_sizes(struct cpuinfo_x86 *c)
+void cpu_detect_cache_sizes(struct cpuinfo_x86 *c)
 {
 	unsigned int n, dummy, ebx, ecx, edx, l2size;
 
@@ -450,7 +450,7 @@ void __cpuinit cpu_detect_cache_sizes(struct cpuinfo_x86 *c)
 	c->x86_cache_size = l2size;
 }
 
-void __cpuinit detect_ht(struct cpuinfo_x86 *c)
+void detect_ht(struct cpuinfo_x86 *c)
 {
 #ifdef CONFIG_X86_HT
 	u32 eax, ebx, ecx, edx;
@@ -501,7 +501,7 @@ out:
 #endif
 }
 
-static void __cpuinit get_cpu_vendor(struct cpuinfo_x86 *c)
+static void get_cpu_vendor(struct cpuinfo_x86 *c)
 {
 	char *v = c->x86_vendor_id;
 	int i;
@@ -528,7 +528,7 @@ static void __cpuinit get_cpu_vendor(struct cpuinfo_x86 *c)
 	this_cpu = &default_cpu;
 }
 
-void __cpuinit cpu_detect(struct cpuinfo_x86 *c)
+void cpu_detect(struct cpuinfo_x86 *c)
 {
 	/* Get vendor name */
 	cpuid(0x00000000, (unsigned int *)&c->cpuid_level,
@@ -558,7 +558,7 @@ void __cpuinit cpu_detect(struct cpuinfo_x86 *c)
 	}
 }
 
-void __cpuinit get_cpu_cap(struct cpuinfo_x86 *c)
+void get_cpu_cap(struct cpuinfo_x86 *c)
 {
 	u32 tfms, xlvl;
 	u32 ebx;
@@ -609,7 +609,7 @@ void __cpuinit get_cpu_cap(struct cpuinfo_x86 *c)
 	init_scattered_cpuid_features(c);
 }
 
-static void __cpuinit identify_cpu_without_cpuid(struct cpuinfo_x86 *c)
+static void identify_cpu_without_cpuid(struct cpuinfo_x86 *c)
 {
 #ifdef CONFIG_X86_32
 	int i;
@@ -724,7 +724,7 @@ void __init early_cpu_init(void)
  * unless we can find a reliable way to detect all the broken cases.
  * Enable it explicitly on 64-bit for non-constant inputs of cpu_has().
  */
-static void __cpuinit detect_nopl(struct cpuinfo_x86 *c)
+static void detect_nopl(struct cpuinfo_x86 *c)
 {
 #ifdef CONFIG_X86_32
 	clear_cpu_cap(c, X86_FEATURE_NOPL);
@@ -733,7 +733,7 @@ static void __cpuinit detect_nopl(struct cpuinfo_x86 *c)
 #endif
 }
 
-static void __cpuinit generic_identify(struct cpuinfo_x86 *c)
+static void generic_identify(struct cpuinfo_x86 *c)
 {
 	c->extended_cpuid_level = 0;
 
@@ -772,7 +772,7 @@ static void __cpuinit generic_identify(struct cpuinfo_x86 *c)
 /*
  * This does the hard work of actually picking apart the CPU stuff...
  */
-static void __cpuinit identify_cpu(struct cpuinfo_x86 *c)
+static void identify_cpu(struct cpuinfo_x86 *c)
 {
 	int i;
 
@@ -908,7 +908,7 @@ void __init identify_boot_cpu(void)
 #endif
 }
 
-void __cpuinit identify_secondary_cpu(struct cpuinfo_x86 *c)
+void identify_secondary_cpu(struct cpuinfo_x86 *c)
 {
 	BUG_ON(c == &boot_cpu_data);
 	identify_cpu(c);
@@ -930,7 +930,7 @@ static const struct msr_range msr_range_array[] __cpuinitconst = {
 	{ 0xc0011000, 0xc001103b},
 };
 
-static void __cpuinit print_cpu_msr(void)
+static void print_cpu_msr(void)
 {
 	unsigned index_min, index_max;
 	unsigned index;
@@ -970,7 +970,7 @@ static __init int setup_noclflush(char *arg)
 }
 __setup("noclflush", setup_noclflush);
 
-void __cpuinit print_cpu_info(struct cpuinfo_x86 *c)
+void print_cpu_info(struct cpuinfo_x86 *c)
 {
 	const char *vendor = NULL;
 
@@ -1092,7 +1092,7 @@ DEFINE_PER_CPU_ALIGNED(struct stack_canary, stack_canary);
 #endif
 
 /* Make sure %fs and %gs are initialized properly in idle threads */
-struct pt_regs * __cpuinit idle_regs(struct pt_regs *regs)
+struct pt_regs * idle_regs(struct pt_regs *regs)
 {
 	memset(regs, 0, sizeof(struct pt_regs));
 	regs->fs = __KERNEL_PERCPU;
@@ -1141,7 +1141,7 @@ static void dbg_restore_debug_regs(void)
  */
 #ifdef CONFIG_X86_64
 
-void __cpuinit cpu_init(void)
+void cpu_init(void)
 {
 	struct orig_ist *oist;
 	struct task_struct *me;
@@ -1236,7 +1236,7 @@ void __cpuinit cpu_init(void)
 
 #else
 
-void __cpuinit cpu_init(void)
+void cpu_init(void)
 {
 	int cpu = smp_processor_id();
 	struct task_struct *curr = current;

@@ -18,7 +18,7 @@
 /*
  * Setup the local clock events for a CPU.
  */
-int __cpuinit local_timer_setup(struct clock_event_device *evt)
+int local_timer_setup(struct clock_event_device *evt)
 {
 	evt->irq = 29;
 	twd_timer_setup(evt);

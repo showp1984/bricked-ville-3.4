@@ -1375,7 +1375,7 @@ static void __init cpufreq_table_init(void) {}
 #endif
 
 #define HOT_UNPLUG_KHZ STBY_KHZ
-static int __cpuinit acpuclock_cpu_callback(struct notifier_block *nfb,
+static int acpuclock_cpu_callback(struct notifier_block *nfb,
 					    unsigned long action, void *hcpu)
 {
 	static int prev_khz[NR_CPUS];

@@ -112,7 +112,7 @@ void nlm_early_init_secondary(void)
 /*
  * Code to run on secondary just after probing the CPU
  */
-static void __cpuinit nlm_init_secondary(void)
+static void nlm_init_secondary(void)
 {
 	nlm_smp_irq_init();
 }

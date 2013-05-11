@@ -340,7 +340,7 @@ static struct sysdev_attribute pa6t_attrs[] = {
 #endif /* HAS_PPC_PMC_PA6T */
 #endif /* HAS_PPC_PMC_CLASSIC */
 
-static void __cpuinit register_cpu_online(unsigned int cpu)
+static void register_cpu_online(unsigned int cpu)
 {
 	struct cpu *c = &per_cpu(cpu_devices, cpu);
 	struct sys_device *s = &c->sysdev;
@@ -497,7 +497,7 @@ ssize_t arch_cpu_release(const char *buf, size_t count)
 
 #endif /* CONFIG_HOTPLUG_CPU */
 
-static int __cpuinit sysfs_cpu_notify(struct notifier_block *self,
+static int sysfs_cpu_notify(struct notifier_block *self,
 				      unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned int)(long)hcpu;

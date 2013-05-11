@@ -1893,7 +1893,7 @@ ia64_mca_cpu_init(void *cpu_data)
 							      PAGE_KERNEL));
 }
 
-static void __cpuinit ia64_mca_cmc_vector_adjust(void *dummy)
+static void ia64_mca_cmc_vector_adjust(void *dummy)
 {
 	unsigned long flags;
 
@@ -1903,7 +1903,7 @@ static void __cpuinit ia64_mca_cmc_vector_adjust(void *dummy)
 	local_irq_restore(flags);
 }
 
-static int __cpuinit mca_cpu_callback(struct notifier_block *nfb,
+static int mca_cpu_callback(struct notifier_block *nfb,
 				      unsigned long action,
 				      void *hcpu)
 {

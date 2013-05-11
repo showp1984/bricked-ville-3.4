@@ -62,7 +62,7 @@ static ssize_t __ref store_online(struct sys_device *dev, struct sysdev_attribut
 }
 static SYSDEV_ATTR(online, 0644, show_online, store_online);
 
-static void __cpuinit register_cpu_control(struct cpu *cpu)
+static void register_cpu_control(struct cpu *cpu)
 {
 	sysdev_create_file(&cpu->sysdev, &attr_online);
 }
@@ -215,7 +215,7 @@ static SYSDEV_CLASS_ATTR(offline, 0444, print_cpus_offline, NULL);
  *
  * Initialize and register the CPU device.
  */
-int __cpuinit register_cpu(struct cpu *cpu, int num)
+int register_cpu(struct cpu *cpu, int num)
 {
 	int error;
 	cpu->node_id = cpu_to_node(num);

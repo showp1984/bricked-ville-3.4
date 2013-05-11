@@ -892,7 +892,7 @@ static void reset_ctrl_regs(void *info)
 	}
 }
 
-static int __cpuinit dbg_reset_notify(struct notifier_block *self,
+static int dbg_reset_notify(struct notifier_block *self,
 				      unsigned long action, void *cpu)
 {
 	if (action == CPU_ONLINE)

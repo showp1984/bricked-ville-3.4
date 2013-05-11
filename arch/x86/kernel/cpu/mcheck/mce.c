@@ -1214,7 +1214,7 @@ int mce_notify_irq(void)
 }
 EXPORT_SYMBOL_GPL(mce_notify_irq);
 
-static int __cpuinit __mcheck_cpu_mce_banks_init(void)
+static int __mcheck_cpu_mce_banks_init(void)
 {
 	int i;
 
@@ -1233,7 +1233,7 @@ static int __cpuinit __mcheck_cpu_mce_banks_init(void)
 /*
  * Initialize Machine Checks for a CPU.
  */
-static int __cpuinit __mcheck_cpu_cap_init(void)
+static int __mcheck_cpu_cap_init(void)
 {
 	unsigned b;
 	u64 cap;
@@ -1300,7 +1300,7 @@ static void __mcheck_cpu_init_generic(void)
 }
 
 /* Add per CPU specific workarounds here */
-static int __cpuinit __mcheck_cpu_apply_quirks(struct cpuinfo_x86 *c)
+static int __mcheck_cpu_apply_quirks(struct cpuinfo_x86 *c)
 {
 	if (c->x86_vendor == X86_VENDOR_UNKNOWN) {
 		pr_info("MCE: unknown CPU type - not enabling MCE support.\n");
@@ -1368,7 +1368,7 @@ static int __cpuinit __mcheck_cpu_apply_quirks(struct cpuinfo_x86 *c)
 	return 0;
 }
 
-static void __cpuinit __mcheck_cpu_ancient_init(struct cpuinfo_x86 *c)
+static void __mcheck_cpu_ancient_init(struct cpuinfo_x86 *c)
 {
 	if (c->x86 != 5)
 		return;
@@ -1428,7 +1428,7 @@ void (*machine_check_vector)(struct pt_regs *, long error_code) =
  * Called for each booted CPU to set up machine checks.
  * Must be called with preempt off:
  */
-void __cpuinit mcheck_cpu_init(struct cpuinfo_x86 *c)
+void mcheck_cpu_init(struct cpuinfo_x86 *c)
 {
 	if (mce_disabled)
 		return;
@@ -1953,7 +1953,7 @@ static struct sysdev_attribute *mce_attrs[] = {
 static cpumask_var_t mce_dev_initialized;
 
 /* Per cpu sysdev init. All of the cpus still share the same ctrl bank: */
-static __cpuinit int mce_create_device(unsigned int cpu)
+static int mce_create_device(unsigned int cpu)
 {
 	int err;
 	int i, j;
@@ -1995,7 +1995,7 @@ error:
 	return err;
 }
 
-static __cpuinit void mce_remove_device(unsigned int cpu)
+static void mce_remove_device(unsigned int cpu)
 {
 	int i;
 
@@ -2013,7 +2013,7 @@ static __cpuinit void mce_remove_device(unsigned int cpu)
 }
 
 /* Make sure there are no machine checks on offlined CPUs. */
-static void __cpuinit mce_disable_cpu(void *h)
+static void mce_disable_cpu(void *h)
 {
 	unsigned long action = *(unsigned long *)h;
 	int i;
@@ -2031,7 +2031,7 @@ static void __cpuinit mce_disable_cpu(void *h)
 	}
 }
 
-static void __cpuinit mce_reenable_cpu(void *h)
+static void mce_reenable_cpu(void *h)
 {
 	unsigned long action = *(unsigned long *)h;
 	int i;

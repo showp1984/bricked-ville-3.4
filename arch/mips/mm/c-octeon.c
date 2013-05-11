@@ -174,7 +174,7 @@ static void octeon_flush_cache_page(struct vm_area_struct *vma,
  * Probe Octeon's caches
  *
  */
-static void __cpuinit probe_octeon(void)
+static void probe_octeon(void)
 {
 	unsigned long icache_size;
 	unsigned long dcache_size;
@@ -250,7 +250,7 @@ static void __cpuinit probe_octeon(void)
  * Setup the Octeon cache flush routines
  *
  */
-void __cpuinit octeon_cache_init(void)
+void octeon_cache_init(void)
 {
 	extern unsigned long ebase;
 	extern char except_vec2_octeon;

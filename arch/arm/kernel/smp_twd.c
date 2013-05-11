@@ -80,7 +80,7 @@ int twd_timer_ack(void)
 	return 0;
 }
 
-static void __cpuinit twd_calibrate_rate(void)
+static void twd_calibrate_rate(void)
 {
 	unsigned long count;
 	u64 waitjiffies;
@@ -122,7 +122,7 @@ static void __cpuinit twd_calibrate_rate(void)
 /*
  * Setup the local clock events for a CPU.
  */
-void __cpuinit twd_timer_setup(struct clock_event_device *clk)
+void twd_timer_setup(struct clock_event_device *clk)
 {
 	twd_calibrate_rate();
 

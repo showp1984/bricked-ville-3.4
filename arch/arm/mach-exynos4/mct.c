@@ -389,7 +389,7 @@ static void exynos4_mct_tick_init(struct clock_event_device *evt)
 }
 
 /* Setup the local clock events for a CPU */
-void __cpuinit local_timer_setup(struct clock_event_device *evt)
+void local_timer_setup(struct clock_event_device *evt)
 {
 	exynos4_mct_tick_init(evt);
 }

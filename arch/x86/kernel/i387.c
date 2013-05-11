@@ -44,7 +44,7 @@ EXPORT_SYMBOL_GPL(xstate_size);
 unsigned int sig_xstate_ia32_size = sizeof(struct _fpstate_ia32);
 static struct i387_fxsave_struct fx_scratch __cpuinitdata;
 
-void __cpuinit mxcsr_feature_mask_init(void)
+void mxcsr_feature_mask_init(void)
 {
 	unsigned long mask = 0;
 
@@ -60,7 +60,7 @@ void __cpuinit mxcsr_feature_mask_init(void)
 	stts();
 }
 
-static void __cpuinit init_thread_xstate(void)
+static void init_thread_xstate(void)
 {
 	/*
 	 * Note that xstate_size might be overwriten later during
@@ -89,7 +89,7 @@ static void __cpuinit init_thread_xstate(void)
  * into all processes.
  */
 
-void __cpuinit fpu_init(void)
+void fpu_init(void)
 {
 	unsigned long cr0;
 	unsigned long cr4_mask = 0;

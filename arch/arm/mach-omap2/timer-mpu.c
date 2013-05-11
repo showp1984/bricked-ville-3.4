@@ -26,7 +26,7 @@
 /*
  * Setup the local clock events for a CPU.
  */
-int __cpuinit local_timer_setup(struct clock_event_device *evt)
+int local_timer_setup(struct clock_event_device *evt)
 {
 	/* Local timers are not supprted on OMAP4430 ES1.0 */
 	if (omap_rev() == OMAP4430_REV_ES1_0)

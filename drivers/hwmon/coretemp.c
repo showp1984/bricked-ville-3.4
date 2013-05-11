@@ -623,7 +623,7 @@ static struct platform_driver coretemp_driver = {
 	.remove = __devexit_p(coretemp_remove),
 };
 
-static int __cpuinit coretemp_device_add(unsigned int cpu)
+static int coretemp_device_add(unsigned int cpu)
 {
 	int err;
 	struct platform_device *pdev;
@@ -697,7 +697,7 @@ static bool is_any_core_online(struct platform_data *pdata)
 	return false;
 }
 
-static void __cpuinit get_core_online(unsigned int cpu)
+static void get_core_online(unsigned int cpu)
 {
 	struct cpuinfo_x86 *c = &cpu_data(cpu);
 	struct platform_device *pdev = coretemp_get_pdev(cpu);
@@ -735,7 +735,7 @@ static void __cpuinit get_core_online(unsigned int cpu)
 	coretemp_add_core(cpu, 0);
 }
 
-static void __cpuinit put_core_offline(unsigned int cpu)
+static void put_core_offline(unsigned int cpu)
 {
 	int i, indx;
 	struct platform_data *pdata;
@@ -785,7 +785,7 @@ static void __cpuinit put_core_offline(unsigned int cpu)
 		coretemp_device_remove(cpu);
 }
 
-static int __cpuinit coretemp_cpu_callback(struct notifier_block *nfb,
+static int coretemp_cpu_callback(struct notifier_block *nfb,
 				 unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned long) hcpu;

@@ -67,12 +67,12 @@ unsigned int __init sh73a0_get_core_count(void)
 	return scu_get_core_count(scu_base);
 }
 
-void __cpuinit sh73a0_secondary_init(unsigned int cpu)
+void sh73a0_secondary_init(unsigned int cpu)
 {
 	gic_secondary_init(0);
 }
 
-int __cpuinit sh73a0_boot_secondary(unsigned int cpu)
+int sh73a0_boot_secondary(unsigned int cpu)
 {
 	/* enable cache coherency */
 	modify_scu_cpu_psr(0, 3 << (cpu * 8));

@@ -2171,7 +2171,7 @@ static void synchronize_mem_cgroup_on_move(struct mem_cgroup *mem, int cpu)
 	spin_unlock(&mem->pcp_counter_lock);
 }
 
-static int __cpuinit memcg_cpu_hotplug_callback(struct notifier_block *nb,
+static int memcg_cpu_hotplug_callback(struct notifier_block *nb,
 					unsigned long action,
 					void *hcpu)
 {

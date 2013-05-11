@@ -163,7 +163,7 @@ static void x86_of_pci_irq_disable(struct pci_dev *dev)
 {
 }
 
-void __cpuinit x86_of_pci_init(void)
+void x86_of_pci_init(void)
 {
 	struct device_node *np;
 

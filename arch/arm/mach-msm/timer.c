@@ -1141,7 +1141,7 @@ static void __init msm_timer_init(void)
 
 #ifdef CONFIG_SMP
 
-int __cpuinit local_timer_setup(struct clock_event_device *evt)
+int local_timer_setup(struct clock_event_device *evt)
 {
 	static DEFINE_PER_CPU(bool, first_boot) = true;
 	struct msm_clock *clock = &msm_clocks[msm_global_timer];

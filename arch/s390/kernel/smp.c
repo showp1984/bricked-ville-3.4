@@ -450,7 +450,7 @@ out:
 /*
  *	Activate a secondary processor.
  */
-int __cpuinit start_secondary(void *cpuvoid)
+int start_secondary(void *cpuvoid)
 {
 	/* Setup the cpu */
 	cpu_init();
@@ -482,7 +482,7 @@ struct create_idle {
 	int cpu;
 };
 
-static void __cpuinit smp_fork_idle(struct work_struct *work)
+static void smp_fork_idle(struct work_struct *work)
 {
 	struct create_idle *c_idle;
 
@@ -491,7 +491,7 @@ static void __cpuinit smp_fork_idle(struct work_struct *work)
 	complete(&c_idle->done);
 }
 
-static int __cpuinit smp_alloc_lowcore(int cpu)
+static int smp_alloc_lowcore(int cpu)
 {
 	unsigned long async_stack, panic_stack;
 	struct _lowcore *lowcore;
@@ -549,7 +549,7 @@ static void smp_free_lowcore(int cpu)
 }
 
 /* Upping and downing of CPUs */
-int __cpuinit __cpu_up(unsigned int cpu)
+int __cpu_up(unsigned int cpu)
 {
 	struct _lowcore *cpu_lowcore;
 	struct create_idle c_idle;
@@ -950,7 +950,7 @@ static struct attribute_group cpu_online_attr_group = {
 	.attrs = cpu_online_attrs,
 };
 
-static int __cpuinit smp_cpu_notify(struct notifier_block *self,
+static int smp_cpu_notify(struct notifier_block *self,
 				    unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned int)(long)hcpu;
