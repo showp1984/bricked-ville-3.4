@@ -659,9 +659,7 @@ static void tsens8960_sensor_mode_init(void)
 				return;
 			}
 			writel_relaxed(reg | TSENS_SW_RST, TSENS_CNTL_ADDR);
-			if (tmdev->hw_type == MSM_8960 ||
-				tmdev->hw_type == MDM_9615 ||
-				tmdev->hw_type == APQ_8064)
+			if (tmdev->hw_type == MSM_8960)
 				reg |= mask | TSENS_8960_SLP_CLK_ENA
 							| TSENS_EN;
 			else
