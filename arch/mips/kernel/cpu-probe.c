@@ -127,7 +127,7 @@ static int __init wait_disable(char *s)
 
 __setup("nowait", wait_disable);
 
-static int __cpuinitdata mips_fpu_disabled;
+static int mips_fpu_disabled;
 
 static int __init fpu_disable(char *s)
 {
@@ -139,7 +139,7 @@ static int __init fpu_disable(char *s)
 
 __setup("nofpu", fpu_disable);
 
-int __cpuinitdata mips_dsp_disabled;
+int mips_dsp_disabled;
 
 static int __init dsp_disable(char *s)
 {
@@ -639,7 +639,7 @@ static inline void cpu_probe_legacy(struct cpuinfo_mips *c, unsigned int cpu)
 	}
 }
 
-static char unknown_isa[] __cpuinitdata = KERN_ERR \
+static char unknown_isa[] = KERN_ERR \
 	"Unsupported ISA type, c0.config0: %d.";
 
 static inline unsigned int decode_config0(struct cpuinfo_mips *c)

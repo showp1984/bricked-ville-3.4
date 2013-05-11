@@ -750,7 +750,7 @@ static inline void rm7k_erratum31(void)
 	}
 }
 
-static char *way_string[] __cpuinitdata = { NULL, "direct mapped", "2-way",
+static char *way_string[] = { NULL, "direct mapped", "2-way",
 	"3-way", "4-way", "5-way", "6-way", "7-way", "8-way"
 };
 
@@ -1281,7 +1281,7 @@ static void nxp_pr4450_fixup_config(void)
 	NXP_BARRIER();
 }
 
-static int __cpuinitdata cca = -1;
+static int cca = -1;
 
 static int __init cca_setup(char *str)
 {
@@ -1334,7 +1334,7 @@ static void coherency_setup(void)
 
 #if defined(CONFIG_DMA_NONCOHERENT)
 
-static int __cpuinitdata coherentio;
+static int coherentio;
 
 static int __init setcoherentio(char *str)
 {
