@@ -760,7 +760,7 @@ void writeback_set_ratelimit(void)
 		ratelimit_pages = (4096 * 1024) / PAGE_CACHE_SIZE;
 }
 
-static int __cpuinit
+static int
 ratelimit_handler(struct notifier_block *self, unsigned long u, void *v)
 {
 	writeback_set_ratelimit();

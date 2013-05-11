@@ -1448,7 +1448,7 @@ x86_get_event_constraints(struct cpu_hw_events *cpuc, struct perf_event *event)
 #include "perf_event_intel_ds.c"
 #include "perf_event_intel.c"
 
-static int __cpuinit
+static int
 x86_pmu_notifier(struct notifier_block *self, unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (long)hcpu;
