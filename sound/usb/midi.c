@@ -1022,7 +1022,6 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 {
 	struct snd_usb_midi* umidi = substream->rmidi->private_data;
 	struct snd_kcontrol *ctl;
-	int err;
 
 	down_read(&umidi->disc_rwsem);
 	if (umidi->disconnected) {
