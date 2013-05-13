@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -248,8 +248,6 @@ static struct resource msm_iommu_gfx3d1_resources[] = {
 	},
 };
 
-//HTC_START Jason Huang 20120710 --- Remove gfx2d0/gfx2d1 resources used in gfx2d0/gfx2d1 instance devices.
-/*
 static struct resource msm_iommu_gfx2d0_resources[] = {
 	{
 		.start = 0x07D00000,
@@ -291,8 +289,6 @@ static struct resource msm_iommu_gfx2d1_resources[] = {
 		.flags = IORESOURCE_IRQ,
 	},
 };
-*/
-//HTC_END
 
 static struct resource msm_iommu_vcap_resources[] = {
 	{
@@ -368,26 +364,26 @@ static struct msm_iommu_dev vcodec_b_iommu = {
 static struct msm_iommu_dev gfx3d_iommu = {
 	.name = "gfx3d",
 	.ncb = 3,
+	.ttbr_split = 2,
 };
 
 static struct msm_iommu_dev gfx3d1_iommu = {
 	.name = "gfx3d1",
 	.ncb = 3,
+	.ttbr_split = 2,
 };
 
-//HTC_START Jason Huang 20120710 --- Remove gfx2d0/gfx2d1 instance device data used for gfx2d0/gfx2d1 instance devices.
-/*
 static struct msm_iommu_dev gfx2d0_iommu = {
 	.name = "gfx2d0",
 	.ncb = 2,
+	.ttbr_split = 2,
 };
 
 static struct msm_iommu_dev gfx2d1_iommu = {
 	.name = "gfx2d1",
 	.ncb = 2,
+	.ttbr_split = 2,
 };
-*/
-//HTC_END
 
 static struct msm_iommu_dev vcap_iommu = {
 	.name = "vcap",
@@ -399,6 +395,7 @@ static struct platform_device msm_device_iommu_jpegd = {
 	.id = 0,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &jpegd_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_jpegd_resources),
 	.resource = msm_iommu_jpegd_resources,
@@ -409,6 +406,7 @@ static struct platform_device msm_device_iommu_vpe = {
 	.id = 1,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &vpe_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_vpe_resources),
 	.resource = msm_iommu_vpe_resources,
@@ -419,6 +417,7 @@ static struct platform_device msm_device_iommu_mdp0 = {
 	.id = 2,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &mdp0_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_mdp0_resources),
 	.resource = msm_iommu_mdp0_resources,
@@ -429,6 +428,7 @@ static struct platform_device msm_device_iommu_mdp1 = {
 	.id = 3,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &mdp1_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_mdp1_resources),
 	.resource = msm_iommu_mdp1_resources,
@@ -439,6 +439,7 @@ static struct platform_device msm_device_iommu_rot = {
 	.id = 4,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &rot_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_rot_resources),
 	.resource = msm_iommu_rot_resources,
@@ -449,6 +450,7 @@ static struct platform_device msm_device_iommu_ijpeg = {
 	.id = 5,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &ijpeg_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_ijpeg_resources),
 	.resource = msm_iommu_ijpeg_resources,
@@ -459,6 +461,7 @@ static struct platform_device msm_device_iommu_vfe = {
 	.id = 6,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &vfe_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_vfe_resources),
 	.resource = msm_iommu_vfe_resources,
@@ -469,6 +472,7 @@ static struct platform_device msm_device_iommu_vcodec_a = {
 	.id = 7,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &vcodec_a_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_vcodec_a_resources),
 	.resource = msm_iommu_vcodec_a_resources,
@@ -479,6 +483,7 @@ static struct platform_device msm_device_iommu_vcodec_b = {
 	.id = 8,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &vcodec_b_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_vcodec_b_resources),
 	.resource = msm_iommu_vcodec_b_resources,
@@ -489,6 +494,7 @@ static struct platform_device msm_device_iommu_gfx3d = {
 	.id = 9,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &gfx3d_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_gfx3d_resources),
 	.resource = msm_iommu_gfx3d_resources,
@@ -499,18 +505,18 @@ static struct platform_device msm_device_iommu_gfx3d1 = {
 	.id = 10,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &gfx3d1_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_gfx3d1_resources),
 	.resource = msm_iommu_gfx3d1_resources,
 };
 
-//HTC_START Jason Huang 20120710 --- Remove gfx2d0/gfx2d1 instance devices.
-/*
 static struct platform_device msm_device_iommu_gfx2d0 = {
 	.name = "msm_iommu",
 	.id = 10,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &gfx2d0_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_gfx2d0_resources),
 	.resource = msm_iommu_gfx2d0_resources,
@@ -521,18 +527,18 @@ static struct platform_device msm_device_iommu_gfx2d1 = {
 	.id = 11,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &gfx2d1_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_gfx2d1_resources),
 	.resource = msm_iommu_gfx2d1_resources,
 };
-*/
-//HTC_END
 
 static struct platform_device msm_device_iommu_vcap = {
 	.name = "msm_iommu",
 	.id = 11,
 	.dev = {
 		.parent = &msm_root_iommu_dev.dev,
+		.platform_data = &vcap_iommu,
 	},
 	.num_resources = ARRAY_SIZE(msm_iommu_vcap_resources),
 	.resource = msm_iommu_vcap_resources,
@@ -666,8 +672,6 @@ static struct msm_iommu_ctx_dev gfx3d1_priv_ctx = {
 		 31, -1}
 };
 
-//HTC_START Jason Huang 20120710 --- Remove gfx2d0/gfx2d1 context bank device data used in gfx2d0/gfx2d1 context bank devices.
-/*
 static struct msm_iommu_ctx_dev gfx2d0_2d0_ctx = {
 	.name = "gfx2d0_2d0",
 	.num = 0,
@@ -679,8 +683,6 @@ static struct msm_iommu_ctx_dev gfx2d1_2d1_ctx = {
 	.num = 0,
 	.mids = {0, 1, 2, 3, 4, 5, 6, 7, -1}
 };
-*/
-//HTC_END
 
 static struct msm_iommu_ctx_dev vcap_vc_ctx = {
 	.name = "vcap_vc",
@@ -699,6 +701,7 @@ static struct platform_device msm_device_jpegd_src_ctx = {
 	.id = 0,
 	.dev = {
 		.parent = &msm_device_iommu_jpegd.dev,
+		.platform_data = &jpegd_src_ctx,
 	},
 };
 
@@ -707,6 +710,7 @@ static struct platform_device msm_device_jpegd_dst_ctx = {
 	.id = 1,
 	.dev = {
 		.parent = &msm_device_iommu_jpegd.dev,
+		.platform_data = &jpegd_dst_ctx,
 	},
 };
 
@@ -715,6 +719,7 @@ static struct platform_device msm_device_vpe_src_ctx = {
 	.id = 2,
 	.dev = {
 		.parent = &msm_device_iommu_vpe.dev,
+		.platform_data = &vpe_src_ctx,
 	},
 };
 
@@ -723,6 +728,7 @@ static struct platform_device msm_device_vpe_dst_ctx = {
 	.id = 3,
 	.dev = {
 		.parent = &msm_device_iommu_vpe.dev,
+		.platform_data = &vpe_dst_ctx,
 	},
 };
 
@@ -731,6 +737,7 @@ static struct platform_device msm_device_mdp_vg1_ctx = {
 	.id = 4,
 	.dev = {
 		.parent = &msm_device_iommu_mdp0.dev,
+		.platform_data = &mdp_port0_cb0_ctx,
 	},
 };
 
@@ -739,6 +746,7 @@ static struct platform_device msm_device_mdp_rgb1_ctx = {
 	.id = 5,
 	.dev = {
 		.parent = &msm_device_iommu_mdp0.dev,
+		.platform_data = &mdp_port0_cb1_ctx,
 	},
 };
 
@@ -747,6 +755,7 @@ static struct platform_device msm_device_mdp_vg2_ctx = {
 	.id = 6,
 	.dev = {
 		.parent = &msm_device_iommu_mdp1.dev,
+		.platform_data = &mdp_port1_cb0_ctx,
 	},
 };
 
@@ -755,6 +764,7 @@ static struct platform_device msm_device_mdp_rgb2_ctx = {
 	.id = 7,
 	.dev = {
 		.parent = &msm_device_iommu_mdp1.dev,
+		.platform_data = &mdp_port1_cb1_ctx,
 	},
 };
 
@@ -763,6 +773,7 @@ static struct platform_device msm_device_rot_src_ctx = {
 	.id = 8,
 	.dev = {
 		.parent = &msm_device_iommu_rot.dev,
+		.platform_data = &rot_src_ctx,
 	},
 };
 
@@ -771,6 +782,7 @@ static struct platform_device msm_device_rot_dst_ctx = {
 	.id = 9,
 	.dev = {
 		.parent = &msm_device_iommu_rot.dev,
+		.platform_data = &rot_dst_ctx,
 	},
 };
 
@@ -779,6 +791,7 @@ static struct platform_device msm_device_ijpeg_src_ctx = {
 	.id = 10,
 	.dev = {
 		.parent = &msm_device_iommu_ijpeg.dev,
+		.platform_data = &ijpeg_src_ctx,
 	},
 };
 
@@ -787,6 +800,7 @@ static struct platform_device msm_device_ijpeg_dst_ctx = {
 	.id = 11,
 	.dev = {
 		.parent = &msm_device_iommu_ijpeg.dev,
+		.platform_data = &ijpeg_dst_ctx,
 	},
 };
 
@@ -795,6 +809,7 @@ static struct platform_device msm_device_vfe_imgwr_ctx = {
 	.id = 12,
 	.dev = {
 		.parent = &msm_device_iommu_vfe.dev,
+		.platform_data = &vfe_imgwr_ctx,
 	},
 };
 
@@ -803,6 +818,7 @@ static struct platform_device msm_device_vfe_misc_ctx = {
 	.id = 13,
 	.dev = {
 		.parent = &msm_device_iommu_vfe.dev,
+		.platform_data = &vfe_misc_ctx,
 	},
 };
 
@@ -811,6 +827,7 @@ static struct platform_device msm_device_vcodec_a_stream_ctx = {
 	.id = 14,
 	.dev = {
 		.parent = &msm_device_iommu_vcodec_a.dev,
+		.platform_data = &vcodec_a_stream_ctx,
 	},
 };
 
@@ -819,6 +836,7 @@ static struct platform_device msm_device_vcodec_a_mm1_ctx = {
 	.id = 15,
 	.dev = {
 		.parent = &msm_device_iommu_vcodec_a.dev,
+		.platform_data = &vcodec_a_mm1_ctx,
 	},
 };
 
@@ -827,6 +845,7 @@ static struct platform_device msm_device_vcodec_b_mm2_ctx = {
 	.id = 16,
 	.dev = {
 		.parent = &msm_device_iommu_vcodec_b.dev,
+		.platform_data = &vcodec_b_mm2_ctx,
 	},
 };
 
@@ -835,6 +854,7 @@ static struct platform_device msm_device_gfx3d_user_ctx = {
 	.id = 17,
 	.dev = {
 		.parent = &msm_device_iommu_gfx3d.dev,
+		.platform_data = &gfx3d_user_ctx,
 	},
 };
 
@@ -843,6 +863,7 @@ static struct platform_device msm_device_gfx3d_priv_ctx = {
 	.id = 18,
 	.dev = {
 		.parent = &msm_device_iommu_gfx3d.dev,
+		.platform_data = &gfx3d_priv_ctx,
 	},
 };
 
@@ -851,6 +872,7 @@ static struct platform_device msm_device_gfx3d1_user_ctx = {
 	.id = 19,
 	.dev = {
 		.parent = &msm_device_iommu_gfx3d1.dev,
+		.platform_data = &gfx3d1_user_ctx,
 	},
 };
 
@@ -859,16 +881,16 @@ static struct platform_device msm_device_gfx3d1_priv_ctx = {
 	.id = 20,
 	.dev = {
 		.parent = &msm_device_iommu_gfx3d1.dev,
+		.platform_data = &gfx3d1_priv_ctx,
 	},
 };
 
-//HTC_START Jason Huang 20120710 --- Remove gfx2d0/gfx2d1 context bank devices.
-/*
 static struct platform_device msm_device_gfx2d0_2d0_ctx = {
 	.name = "msm_iommu_ctx",
 	.id = 19,
 	.dev = {
 		.parent = &msm_device_iommu_gfx2d0.dev,
+		.platform_data = &gfx2d0_2d0_ctx,
 	},
 };
 
@@ -877,16 +899,16 @@ static struct platform_device msm_device_gfx2d1_2d1_ctx = {
 	.id = 20,
 	.dev = {
 		.parent = &msm_device_iommu_gfx2d1.dev,
+		.platform_data = &gfx2d1_2d1_ctx,
 	},
 };
-*/
-//HTC_END
 
 static struct platform_device msm_device_vcap_vc_ctx = {
 	.name = "msm_iommu_ctx",
 	.id = 21,
 	.dev = {
 		.parent = &msm_device_iommu_vcap.dev,
+		.platform_data = &vcap_vc_ctx,
 	},
 };
 
@@ -895,11 +917,11 @@ static struct platform_device msm_device_vcap_vp_ctx = {
 	.id = 22,
 	.dev = {
 		.parent = &msm_device_iommu_vcap.dev,
+		.platform_data = &vcap_vp_ctx,
 	},
 };
 
 static struct platform_device *msm_iommu_common_devs[] = {
-	&msm_device_iommu_jpegd,
 	&msm_device_iommu_vpe,
 	&msm_device_iommu_mdp0,
 	&msm_device_iommu_mdp1,
@@ -911,50 +933,21 @@ static struct platform_device *msm_iommu_common_devs[] = {
 	&msm_device_iommu_gfx3d,
 };
 
-//HTC_START Jason Huang 20120710 --- Remove gfx2d0/gfx2d1 instance device array used for registration.
-/*
 static struct platform_device *msm_iommu_gfx2d_devs[] = {
 	&msm_device_iommu_gfx2d0,
 	&msm_device_iommu_gfx2d1,
 };
-*/
-//HTC_END
 
 static struct platform_device *msm_iommu_8064_devs[] = {
 	&msm_device_iommu_gfx3d1,
 	&msm_device_iommu_vcap,
 };
 
-static struct msm_iommu_dev *msm_iommu_common_data[] = {
-	&jpegd_iommu,
-	&vpe_iommu,
-	&mdp0_iommu,
-	&mdp1_iommu,
-	&rot_iommu,
-	&ijpeg_iommu,
-	&vfe_iommu,
-	&vcodec_a_iommu,
-	&vcodec_b_iommu,
-	&gfx3d_iommu,
-};
-
-//HTC_START Jason Huang 20120710 --- Remove gfx2d0/gfx2d1 instance device data array used for registration.
-/*
-static struct msm_iommu_dev *msm_iommu_gfx2d_data[] = {
-	&gfx2d0_iommu,
-	&gfx2d1_iommu,
-};
-*/
-//HTC_END
-
-static struct msm_iommu_dev *msm_iommu_8064_data[] = {
-	&gfx3d1_iommu,
-	&vcap_iommu,
+static struct platform_device *msm_iommu_jpegd_devs[] = {
+	&msm_device_iommu_jpegd,
 };
 
 static struct platform_device *msm_iommu_common_ctx_devs[] = {
-	&msm_device_jpegd_src_ctx,
-	&msm_device_jpegd_dst_ctx,
 	&msm_device_vpe_src_ctx,
 	&msm_device_vpe_dst_ctx,
 	&msm_device_mdp_vg1_ctx,
@@ -974,14 +967,10 @@ static struct platform_device *msm_iommu_common_ctx_devs[] = {
 	&msm_device_gfx3d_priv_ctx,
 };
 
-//HTC_START Jason Huang 20120710 --- Remove gfx2d0/gfx2d1 context bank device array used for registration.
-/*
 static struct platform_device *msm_iommu_gfx2d_ctx_devs[] = {
 	&msm_device_gfx2d0_2d0_ctx,
 	&msm_device_gfx2d1_2d1_ctx,
 };
-*/
-//HTC_END
 
 static struct platform_device *msm_iommu_8064_ctx_devs[] = {
 	&msm_device_gfx3d1_user_ctx,
@@ -990,118 +979,18 @@ static struct platform_device *msm_iommu_8064_ctx_devs[] = {
 	&msm_device_vcap_vp_ctx,
 };
 
-static struct msm_iommu_ctx_dev *msm_iommu_common_ctx_data[] = {
-	&jpegd_src_ctx,
-	&jpegd_dst_ctx,
-	&vpe_src_ctx,
-	&vpe_dst_ctx,
-	&mdp_vg1_ctx,
-	&mdp_rgb1_ctx,
-	&mdp_vg2_ctx,
-	&mdp_rgb2_ctx,
-	&rot_src_ctx,
-	&rot_dst_ctx,
-	&ijpeg_src_ctx,
-	&ijpeg_dst_ctx,
-	&vfe_imgwr_ctx,
-	&vfe_misc_ctx,
-	&vcodec_a_stream_ctx,
-	&vcodec_a_mm1_ctx,
-	&vcodec_b_mm2_ctx,
-	&gfx3d_user_ctx,
-	&gfx3d_priv_ctx,
+static struct platform_device *msm_iommu_jpegd_ctx_devs[] = {
+	&msm_device_jpegd_src_ctx,
+	&msm_device_jpegd_dst_ctx,
 };
-
-//HTC_START Jason Huang 20120710 --- Remove gfx2d0/gfx2d1 context bank device data array used for registration.
-/*
-static struct msm_iommu_ctx_dev *msm_iommu_gfx2d_ctx_data[] = {
-	&gfx2d0_2d0_ctx,
-	&gfx2d1_2d1_ctx,
-};
-*/
-//HTC_END
-
-static struct msm_iommu_ctx_dev *msm_iommu_8064_ctx_data[] = {
-	&gfx3d1_user_ctx,
-	&gfx3d1_priv_ctx,
-	&vcap_vc_ctx,
-	&vcap_vp_ctx,
-};
-
-static int iommu_init_devs(struct platform_device *devs[],
-	struct msm_iommu_dev *data[], int size)
-{
-	int ret, i;
-
-	for (i = 0; i < size; i++) {
-		ret = platform_device_add_data(devs[i],
-			  data[i], sizeof(struct msm_iommu_dev));
-		if (ret != 0) {
-			pr_err("platform_device_add_data failed, "
-			       "i = %d\n", i);
-			goto failure_unwind;
-		}
-
-		ret = platform_device_register(devs[i]);
-
-		if (ret != 0) {
-			pr_err("platform_device_register iommu failed, "
-			       "i = %d\n", i);
-			goto failure_unwind;
-		}
-	}
-	return 0;
-
-failure_unwind:
-	while (--i >= 0)
-		platform_device_unregister(devs[i]);
-
-	return ret;
-}
-
-
-static int iommu_init_ctx_devs(struct platform_device *ctx_devs[],
-	struct msm_iommu_ctx_dev *ctx_data[], int size)
-{
-	int ret, i;
-
-	for (i = 0; i < size; i++) {
-		ret = platform_device_add_data(ctx_devs[i],
-				ctx_data[i], sizeof(struct msm_iommu_ctx_dev));
-		if (ret != 0) {
-			pr_err("platform_device_add_data iommu failed, "
-			       "i = %d\n", i);
-			goto failure_unwind;
-		}
-
-		ret = platform_device_register(ctx_devs[i]);
-		if (ret != 0) {
-			pr_err("platform_device_register ctx failed, "
-			       "i = %d\n", i);
-			goto failure_unwind;
-		}
-	}
-	return 0;
-
-failure_unwind:
-	while (--i >= 0)
-		platform_device_unregister(ctx_devs[i]);
-
-	return ret;
-}
 
 static int __init iommu_init(void)
 {
 	int ret;
-
-	//HTC_START Jason Huang 20120410 --- To fix build errors when CONFIG_MSM_IOMMU=y
-	/*
 	if (!msm_soc_version_supports_iommu()) {
 		pr_err("IOMMU is not supported on this SoC version.\n");
 		return -ENODEV;
 	}
-	*/
-	//HTC_END
 
 	ret = platform_device_register(&msm_root_iommu_dev);
 	if (ret != 0) {
@@ -1110,59 +999,45 @@ static int __init iommu_init(void)
 	}
 
 	/* Initialize common devs */
-	ret = iommu_init_devs(msm_iommu_common_devs,
-			 msm_iommu_common_data,
-			 ARRAY_SIZE(msm_iommu_common_devs));
-	if (ret != 0)
-		goto failure2;
+	platform_add_devices(msm_iommu_common_devs,
+				ARRAY_SIZE(msm_iommu_common_devs));
 
 	/* Initialize soc-specific devs */
-	if (cpu_is_apq8064()) {
-		ret = iommu_init_devs(msm_iommu_8064_devs,
-				 msm_iommu_8064_data,
-				 ARRAY_SIZE(msm_iommu_8064_devs));
-	} else {
-		//HTC_START Jason Huang 20120710 --- Don't init gfx2d0/gfx2d1 instance devices
-		//                                   IOMMU is not used for graphic engines on 8960.
-		/*
-		ret = iommu_init_devs(msm_iommu_gfx2d_devs,
-					 msm_iommu_gfx2d_data,
-					ARRAY_SIZE(msm_iommu_gfx2d_devs));
-		*/
-		//HTC_END
+	if (cpu_is_msm8x60() || cpu_is_msm8960()) {
+		platform_add_devices(msm_iommu_jpegd_devs,
+				ARRAY_SIZE(msm_iommu_jpegd_devs));
+		platform_add_devices(msm_iommu_gfx2d_devs,
+				ARRAY_SIZE(msm_iommu_gfx2d_devs));
 	}
-	if (ret != 0)
-		goto failure2;
+
+	if (cpu_is_apq8064()) {
+		platform_add_devices(msm_iommu_jpegd_devs,
+				ARRAY_SIZE(msm_iommu_jpegd_devs));
+		platform_add_devices(msm_iommu_8064_devs,
+				ARRAY_SIZE(msm_iommu_8064_devs));
+	}
 
 	/* Initialize common ctx_devs */
-	ret = iommu_init_ctx_devs(msm_iommu_common_ctx_devs,
-				 msm_iommu_common_ctx_data,
-				 ARRAY_SIZE(msm_iommu_common_ctx_devs));
-	if (ret != 0)
-		goto failure2;
+	ret = platform_add_devices(msm_iommu_common_ctx_devs,
+				ARRAY_SIZE(msm_iommu_common_ctx_devs));
 
 	/* Initialize soc-specific ctx_devs */
-	if (cpu_is_apq8064()) {
-		ret = iommu_init_ctx_devs(msm_iommu_8064_ctx_devs,
-				msm_iommu_8064_ctx_data,
-				ARRAY_SIZE(msm_iommu_8064_ctx_devs));
-	} else {
-		//HTC_START Jason Huang 20120710 --- Don't init gfx2d0/gfx2d1 context bank devices.
-		//                                   IOMMU is not used for graphic engines on 8960.
-		/*
-		ret = iommu_init_ctx_devs(msm_iommu_gfx2d_ctx_devs,
-					msm_iommu_gfx2d_ctx_data,
-					ARRAY_SIZE(msm_iommu_gfx2d_ctx_devs));
-		*/
-		//HTC_END
+	if (cpu_is_msm8x60() || cpu_is_msm8960()) {
+		platform_add_devices(msm_iommu_jpegd_ctx_devs,
+				ARRAY_SIZE(msm_iommu_jpegd_ctx_devs));
+		platform_add_devices(msm_iommu_gfx2d_ctx_devs,
+				ARRAY_SIZE(msm_iommu_gfx2d_ctx_devs));
 	}
-	if (ret != 0)
-		goto failure2;
+
+	if (cpu_is_apq8064()) {
+		platform_add_devices(msm_iommu_jpegd_ctx_devs,
+				ARRAY_SIZE(msm_iommu_jpegd_ctx_devs));
+		platform_add_devices(msm_iommu_8064_ctx_devs,
+				ARRAY_SIZE(msm_iommu_8064_ctx_devs));
+	}
 
 	return 0;
 
-failure2:
-	platform_device_unregister(&msm_root_iommu_dev);
 failure:
 	return ret;
 }
@@ -1175,34 +1050,36 @@ static void __exit iommu_exit(void)
 	for (i = 0; i < ARRAY_SIZE(msm_iommu_common_ctx_devs); i++)
 		platform_device_unregister(msm_iommu_common_ctx_devs[i]);
 
-	/* soc-specific ctx_devs. */
-	if (cpu_is_apq8064()) {
-		for (i = 0; i < ARRAY_SIZE(msm_iommu_8064_ctx_devs); i++)
-			platform_device_unregister(msm_iommu_8064_ctx_devs[i]);
-	} else {
-		//HTC_START Jason Huang 20120710 --- gfx2d0/gfx2d1 context bank devices aren't init-ed thus no need to un-register them.
-		/*
-		for (i = 0; i < ARRAY_SIZE(msm_iommu_gfx2d_ctx_devs); i++)
-			platform_device_unregister(msm_iommu_gfx2d_ctx_devs[i]);
-		*/
-		//HTC_END
-	}
-
 	/* Common devs. */
 	for (i = 0; i < ARRAY_SIZE(msm_iommu_common_devs); ++i)
 		platform_device_unregister(msm_iommu_common_devs[i]);
 
-	/* soc-specific devs. */
-	if (cpu_is_apq8064()) {
-		for (i = 0; i < ARRAY_SIZE(msm_iommu_8064_devs); i++)
-			platform_device_unregister(msm_iommu_8064_devs[i]);
-	} else {
-		//HTC_START Jason Huang 20120710 --- gfx2d0/gfx2d1 instance devices aren't init-ed thus no need to un-register them.
-		/*
+	if (cpu_is_msm8x60() || cpu_is_msm8960()) {
+		for (i = 0; i < ARRAY_SIZE(msm_iommu_gfx2d_ctx_devs); i++)
+			platform_device_unregister(msm_iommu_gfx2d_ctx_devs[i]);
+
+		for (i = 0; i < ARRAY_SIZE(msm_iommu_jpegd_ctx_devs); i++)
+			platform_device_unregister(msm_iommu_jpegd_ctx_devs[i]);
+
 		for (i = 0; i < ARRAY_SIZE(msm_iommu_gfx2d_devs); i++)
 			platform_device_unregister(msm_iommu_gfx2d_devs[i]);
-		*/
-		//HTC_END
+
+		for (i = 0; i < ARRAY_SIZE(msm_iommu_jpegd_devs); i++)
+			platform_device_unregister(msm_iommu_jpegd_devs[i]);
+	}
+
+	if (cpu_is_apq8064()) {
+		for (i = 0; i < ARRAY_SIZE(msm_iommu_8064_ctx_devs); i++)
+			platform_device_unregister(msm_iommu_8064_ctx_devs[i]);
+
+		for (i = 0; i < ARRAY_SIZE(msm_iommu_jpegd_ctx_devs); i++)
+			platform_device_unregister(msm_iommu_jpegd_ctx_devs[i]);
+
+		for (i = 0; i < ARRAY_SIZE(msm_iommu_8064_devs); i++)
+			platform_device_unregister(msm_iommu_8064_devs[i]);
+
+		for (i = 0; i < ARRAY_SIZE(msm_iommu_jpegd_devs); i++)
+			platform_device_unregister(msm_iommu_jpegd_devs[i]);
 	}
 
 	platform_device_unregister(&msm_root_iommu_dev);

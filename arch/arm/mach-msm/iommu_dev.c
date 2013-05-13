@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,7 +24,6 @@
 
 #include <mach/iommu_hw-8xxx.h>
 #include <mach/iommu.h>
-#include <mach/clk.h>
 
 struct iommu_ctx_iter_data {
 	/* input */
@@ -132,7 +131,7 @@ static int msm_iommu_probe(struct platform_device *pdev)
 	struct msm_iommu_dev *iommu_dev = pdev->dev.platform_data;
 	void __iomem *regs_base;
 	resource_size_t	len;
-	int ret, irq, par;
+	int ret, par;
 
 	if (pdev->id == -1) {
 		msm_iommu_root_dev = pdev;
@@ -157,21 +156,19 @@ static int msm_iommu_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
-	ret = clk_enable(iommu_pclk);
+	ret = clk_prepare_enable(iommu_pclk);
 	if (ret)
 		goto fail_enable;
 
 	iommu_clk = clk_get(&pdev->dev, "core_clk");
 
 	if (!IS_ERR(iommu_clk))	{
-		//HTC_START Jason Huang 20120410 --- To fix build errors when CONFIG_MSM_IOMMU=y
-		/*
-		if (clk_get_rate(iommu_clk) == 0)
-			clk_set_min_rate(iommu_clk, 1);
-		*/
-		//HTC_END
+		if (clk_get_rate(iommu_clk) == 0) {
+			ret = clk_round_rate(iommu_clk, 1);
+			clk_set_rate(iommu_clk, ret);
+		}
 
-		ret = clk_enable(iommu_clk);
+		ret = clk_prepare_enable(iommu_clk);
 		if (ret) {
 			clk_put(iommu_clk);
 			goto fail_pclk;
@@ -205,12 +202,6 @@ static int msm_iommu_probe(struct platform_device *pdev)
 		goto fail_mem;
 	}
 
-	irq = platform_get_irq_byname(pdev, "nonsecure_irq");
-	if (irq < 0) {
-		ret = -ENODEV;
-		goto fail_io;
-	}
-
 	msm_iommu_reset(regs_base, iommu_dev->ncb);
 
 	SET_M(regs_base, 0, 1);
@@ -229,30 +220,22 @@ static int msm_iommu_probe(struct platform_device *pdev)
 		goto fail_io;
 	}
 
-	ret = request_irq(irq, msm_iommu_fault_handler, 0,
-			"msm_iommu_secure_irpt_handler", drvdata);
-	if (ret) {
-		pr_err("Request IRQ %d failed with ret=%d\n", irq, ret);
-		goto fail_io;
-	}
-
-
 	drvdata->pclk = iommu_pclk;
 	drvdata->clk = iommu_clk;
 	drvdata->base = regs_base;
-	drvdata->irq = irq;
 	drvdata->ncb = iommu_dev->ncb;
+	drvdata->ttbr_split = iommu_dev->ttbr_split;
 	drvdata->name = iommu_dev->name;
 
-	pr_info("device %s mapped at %p, irq %d with %d ctx banks\n",
-		iommu_dev->name, regs_base, irq, iommu_dev->ncb);
+	pr_info("device %s mapped at %p, with %d ctx banks\n",
+		iommu_dev->name, regs_base, iommu_dev->ncb);
 
 	platform_set_drvdata(pdev, drvdata);
 
 	if (iommu_clk)
-		clk_disable(iommu_clk);
+		clk_disable_unprepare(iommu_clk);
 
-	clk_disable(iommu_pclk);
+	clk_disable_unprepare(iommu_pclk);
 
 	return 0;
 fail_io:
@@ -261,11 +244,11 @@ fail_mem:
 	release_mem_region(r->start, len);
 fail_clk:
 	if (iommu_clk) {
-		clk_disable(iommu_clk);
+		clk_disable_unprepare(iommu_clk);
 		clk_put(iommu_clk);
 	}
 fail_pclk:
-	clk_disable(iommu_pclk);
+	clk_disable_unprepare(iommu_pclk);
 fail_enable:
 	clk_put(iommu_pclk);
 fail:
@@ -294,7 +277,7 @@ static int msm_iommu_ctx_probe(struct platform_device *pdev)
 	struct msm_iommu_ctx_dev *c = pdev->dev.platform_data;
 	struct msm_iommu_drvdata *drvdata;
 	struct msm_iommu_ctx_drvdata *ctx_drvdata = NULL;
-	int i, ret;
+	int i, ret, irq;
 	if (!c || !pdev->dev.parent) {
 		ret = -EINVAL;
 		goto fail;
@@ -314,18 +297,35 @@ static int msm_iommu_ctx_probe(struct platform_device *pdev)
 	}
 	ctx_drvdata->num = c->num;
 	ctx_drvdata->pdev = pdev;
+	ctx_drvdata->name = c->name;
+
+	irq = platform_get_irq_byname(to_platform_device(pdev->dev.parent),
+				      "nonsecure_irq");
+	if (irq < 0) {
+		ret = -ENODEV;
+		goto fail;
+	}
+
+	ret = request_threaded_irq(irq, NULL, msm_iommu_fault_handler,
+				   IRQF_ONESHOT | IRQF_SHARED,
+				   "msm_iommu_nonsecure_irq", ctx_drvdata);
+
+	if (ret) {
+		pr_err("request_threaded_irq %d failed: %d\n", irq, ret);
+		goto fail;
+	}
 
 	INIT_LIST_HEAD(&ctx_drvdata->attached_elm);
 	platform_set_drvdata(pdev, ctx_drvdata);
 
-	ret = clk_enable(drvdata->pclk);
+	ret = clk_prepare_enable(drvdata->pclk);
 	if (ret)
 		goto fail;
 
 	if (drvdata->clk) {
-		ret = clk_enable(drvdata->clk);
+		ret = clk_prepare_enable(drvdata->clk);
 		if (ret) {
-			clk_disable(drvdata->pclk);
+			clk_disable_unprepare(drvdata->pclk);
 			goto fail;
 		}
 	}
@@ -360,8 +360,8 @@ static int msm_iommu_ctx_probe(struct platform_device *pdev)
 	mb();
 
 	if (drvdata->clk)
-		clk_disable(drvdata->clk);
-	clk_disable(drvdata->pclk);
+		clk_disable_unprepare(drvdata->clk);
+	clk_disable_unprepare(drvdata->pclk);
 
 	dev_info(&pdev->dev, "context %s using bank %d\n", c->name, c->num);
 	return 0;

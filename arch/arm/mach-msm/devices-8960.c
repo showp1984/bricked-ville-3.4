@@ -42,6 +42,7 @@
 #include "rpm_stats.h"
 #include "pil-q6v4.h"
 #include "scm-pas.h"
+#include <mach/iommu_domains.h>
 
 #ifdef CONFIG_MSM_MPM
 #include "mpm.h"
@@ -589,6 +590,58 @@ static struct msm_bus_vectors vidc_vdec_1080p_vectors[] = {
 		.ib  = 10000000,
 	},
 };
+static struct msm_bus_vectors vidc_venc_1080p_turbo_vectors[] = {
+	{
+		.src = MSM_BUS_MASTER_HD_CODEC_PORT0,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab  = 222298112,
+		.ib  = 3522000000U,
+	},
+	{
+		.src = MSM_BUS_MASTER_HD_CODEC_PORT1,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab  = 330301440,
+		.ib  = 3522000000U,
+	},
+	{
+		.src = MSM_BUS_MASTER_AMPSS_M0,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab  = 2500000,
+		.ib  = 700000000,
+	},
+	{
+		.src = MSM_BUS_MASTER_AMPSS_M0,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab  = 2500000,
+		.ib  = 10000000,
+	},
+};
+static struct msm_bus_vectors vidc_vdec_1080p_turbo_vectors[] = {
+	{
+		.src = MSM_BUS_MASTER_HD_CODEC_PORT0,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab  = 222298112,
+		.ib  = 3522000000U,
+	},
+	{
+		.src = MSM_BUS_MASTER_HD_CODEC_PORT1,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab  = 330301440,
+		.ib  = 3522000000U,
+	},
+	{
+		.src = MSM_BUS_MASTER_AMPSS_M0,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab  = 2500000,
+		.ib  = 700000000,
+	},
+	{
+		.src = MSM_BUS_MASTER_AMPSS_M0,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab  = 2500000,
+		.ib  = 10000000,
+	},
+};
 
 static struct msm_bus_paths vidc_bus_client_config[] = {
 	{
@@ -618,6 +671,14 @@ static struct msm_bus_paths vidc_bus_client_config[] = {
 	{
 		ARRAY_SIZE(vidc_vdec_1080p_vectors),
 		vidc_vdec_1080p_vectors,
+	},
+	{
+		ARRAY_SIZE(vidc_venc_1080p_turbo_vectors),
+		vidc_vdec_1080p_turbo_vectors,
+	},
+	{
+		ARRAY_SIZE(vidc_vdec_1080p_turbo_vectors),
+		vidc_vdec_1080p_turbo_vectors,
 	},
 };
 
@@ -1895,6 +1956,11 @@ struct platform_device msm_rotator_device = {
 		.platform_data = &rotator_pdata,
 	},
 };
+
+void __init msm_rotator_set_split_iommu_domain(void)
+{
+	rotator_pdata.rot_iommu_split_domain = 1;
+}
 #endif
 
 #define MIPI_DSI_HW_BASE        0x04700000
@@ -2538,6 +2604,20 @@ static struct resource kgsl_3d0_resources[] = {
 	},
 };
 
+static const struct kgsl_iommu_ctx kgsl_3d0_iommu_ctxs[] = {
+	{ "gfx3d_user", 0 },
+	{ "gfx3d_priv", 1 },
+};
+
+static struct kgsl_device_iommu_data kgsl_3d0_iommu_data[] = {
+	{
+		.iommu_ctxs = kgsl_3d0_iommu_ctxs,
+		.iommu_ctx_count = ARRAY_SIZE(kgsl_3d0_iommu_ctxs),
+		.physstart = 0x07C00000,
+		.physend = 0x07C00000 + SZ_1M - 1,
+	},
+};
+
 static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.pwrlevel = {
 		{
@@ -2574,9 +2654,8 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 #ifdef CONFIG_MSM_BUS_SCALING
 	.bus_scale_table = &grp3d_bus_scale_pdata,
 #endif
-	.iommu_user_ctx_name = "gfx3d_user",
-	.iommu_priv_ctx_name = NULL,
-	.snapshot_address = MSM_GPU_SNAP_SHOT_3D0_PHYS,
+	.iommu_data = kgsl_3d0_iommu_data,
+	.iommu_count = ARRAY_SIZE(kgsl_3d0_iommu_data),
 };
 
 struct platform_device msm_kgsl_3d0 = {
@@ -2604,6 +2683,19 @@ static struct resource kgsl_2d0_resources[] = {
 	},
 };
 
+static const struct kgsl_iommu_ctx kgsl_2d0_iommu_ctxs[] = {
+	{ "gfx2d0_2d0", 0 },
+};
+
+static struct kgsl_device_iommu_data kgsl_2d0_iommu_data[] = {
+	{
+		.iommu_ctxs = kgsl_2d0_iommu_ctxs,
+		.iommu_ctx_count = ARRAY_SIZE(kgsl_2d0_iommu_ctxs),
+		.physstart = 0x07D00000,
+		.physend = 0x07D00000 + SZ_1M - 1,
+	},
+};
+
 static struct kgsl_device_platform_data kgsl_2d0_pdata = {
 	.pwrlevel = {
 		{
@@ -2628,9 +2720,8 @@ static struct kgsl_device_platform_data kgsl_2d0_pdata = {
 #ifdef CONFIG_MSM_BUS_SCALING
 	.bus_scale_table = &grp2d0_bus_scale_pdata,
 #endif
-	.iommu_user_ctx_name = "gfx2d0_2d0",
-	.iommu_priv_ctx_name = NULL,
-	.snapshot_address = 0,
+	.iommu_data = kgsl_2d0_iommu_data,
+	.iommu_count = ARRAY_SIZE(kgsl_2d0_iommu_data),
 };
 
 struct platform_device msm_kgsl_2d0 = {
@@ -2640,6 +2731,19 @@ struct platform_device msm_kgsl_2d0 = {
 	.resource = kgsl_2d0_resources,
 	.dev = {
 		.platform_data = &kgsl_2d0_pdata,
+	},
+};
+
+static const struct kgsl_iommu_ctx kgsl_2d1_iommu_ctxs[] = {
+	{ "gfx2d1_2d1", 0 },
+};
+
+static struct kgsl_device_iommu_data kgsl_2d1_iommu_data[] = {
+	{
+		.iommu_ctxs = kgsl_2d1_iommu_ctxs,
+		.iommu_ctx_count = ARRAY_SIZE(kgsl_2d1_iommu_ctxs),
+		.physstart = 0x07E00000,
+		.physend = 0x07E00000 + SZ_1M - 1,
 	},
 };
 
@@ -2682,9 +2786,8 @@ static struct kgsl_device_platform_data kgsl_2d1_pdata = {
 #ifdef CONFIG_MSM_BUS_SCALING
 	.bus_scale_table = &grp2d1_bus_scale_pdata,
 #endif
-	.iommu_user_ctx_name = "gfx2d1_2d1",
-	.iommu_priv_ctx_name = NULL,
-	.snapshot_address = MSM_GPU_SNAP_SHOT_2D1_PHYS,
+	.iommu_data = kgsl_2d1_iommu_data,
+	.iommu_count = ARRAY_SIZE(kgsl_2d1_iommu_data),
 };
 
 struct platform_device msm_kgsl_2d1 = {
@@ -2983,4 +3086,162 @@ struct platform_device msm8960_device_cache_erp = {
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(msm_cache_erp_resources),
 	.resource	= msm_cache_erp_resources,
+};
+
+struct msm_iommu_domain_name msm8960_iommu_ctx_names[] = {
+	/* Camera */
+	{
+		.name = "vpe_src",
+		.domain = CAMERA_DOMAIN,
+	},
+	/* Camera */
+	{
+		.name = "vpe_dst",
+		.domain = CAMERA_DOMAIN,
+	},
+	/* Camera */
+	{
+		.name = "vfe_imgwr",
+		.domain = CAMERA_DOMAIN,
+	},
+	/* Camera */
+	{
+		.name = "vfe_misc",
+		.domain = CAMERA_DOMAIN,
+	},
+	/* Camera */
+	{
+		.name = "ijpeg_src",
+		.domain = CAMERA_DOMAIN,
+	},
+	/* Camera */
+	{
+		.name = "ijpeg_dst",
+		.domain = CAMERA_DOMAIN,
+	},
+	/* Camera */
+	{
+		.name = "jpegd_src",
+		.domain = CAMERA_DOMAIN,
+	},
+	/* Camera */
+	{
+		.name = "jpegd_dst",
+		.domain = CAMERA_DOMAIN,
+	},
+	/* Rotator */
+	{
+		.name = "rot_src",
+		.domain = ROTATOR_SRC_DOMAIN,
+	},
+	/* Rotator */
+	{
+		.name = "rot_dst",
+		.domain = ROTATOR_SRC_DOMAIN,
+	},
+	/* Video */
+	{
+		.name = "vcodec_a_mm1",
+		.domain = VIDEO_DOMAIN,
+	},
+	/* Video */
+	{
+		.name = "vcodec_b_mm2",
+		.domain = VIDEO_DOMAIN,
+	},
+	/* Video */
+	{
+		.name = "vcodec_a_stream",
+		.domain = VIDEO_DOMAIN,
+	},
+};
+
+static struct mem_pool msm8960_video_pools[] =  {
+	/*
+	 * Video hardware has the following requirements:
+	 * 1. All video addresses used by the video hardware must be at a higher
+	 *    address than video firmware address.
+	 * 2. Video hardware can only access a range of 256MB from the base of
+	 *    the video firmware.
+	*/
+	[VIDEO_FIRMWARE_POOL] =
+	/* Low addresses, intended for video firmware */
+		{
+			.paddr	= SZ_128K,
+			.size	= SZ_16M - SZ_128K,
+		},
+	[VIDEO_MAIN_POOL] =
+	/* Main video pool */
+		{
+			.paddr	= SZ_16M,
+			.size	= SZ_256M - SZ_16M,
+		},
+	[GEN_POOL] =
+	/* Remaining address space up to 2G */
+		{
+			.paddr	= SZ_256M,
+			.size	= SZ_2G - SZ_256M,
+		},
+};
+
+static struct mem_pool msm8960_camera_pools[] =  {
+	[GEN_POOL] =
+	/* One address space for camera */
+		{
+			.paddr	= SZ_128K,
+			.size	= SZ_2G - SZ_128K,
+		},
+};
+
+static struct mem_pool msm8960_display_read_pools[] =  {
+	[GEN_POOL] =
+	/* One address space for display reads */
+		{
+			.paddr	= SZ_128K,
+			.size	= SZ_2G - SZ_128K,
+		},
+};
+
+static struct mem_pool msm8960_rotator_src_pools[] =  {
+	[GEN_POOL] =
+	/* One address space for rotator src */
+		{
+			.paddr	= SZ_128K,
+			.size	= SZ_2G - SZ_128K,
+		},
+};
+
+static struct msm_iommu_domain msm8960_iommu_domains[] = {
+		[VIDEO_DOMAIN] = {
+			.iova_pools = msm8960_video_pools,
+			.npools = ARRAY_SIZE(msm8960_video_pools),
+		},
+		[CAMERA_DOMAIN] = {
+			.iova_pools = msm8960_camera_pools,
+			.npools = ARRAY_SIZE(msm8960_camera_pools),
+		},
+		[DISPLAY_READ_DOMAIN] = {
+			.iova_pools = msm8960_display_read_pools,
+			.npools = ARRAY_SIZE(msm8960_display_read_pools),
+		},
+		[ROTATOR_SRC_DOMAIN] = {
+			.iova_pools = msm8960_rotator_src_pools,
+			.npools = ARRAY_SIZE(msm8960_rotator_src_pools),
+		},
+};
+
+struct iommu_domains_pdata msm8960_iommu_domain_pdata = {
+	.domains = msm8960_iommu_domains,
+	.ndomains = ARRAY_SIZE(msm8960_iommu_domains),
+	.domain_names = msm8960_iommu_ctx_names,
+	.nnames = ARRAY_SIZE(msm8960_iommu_ctx_names),
+	.domain_alloc_flags = 0,
+};
+
+struct platform_device msm8960_iommu_domain_device = {
+	.name = "iommu_domains",
+	.id = -1,
+	.dev = {
+		.platform_data = &msm8960_iommu_domain_pdata,
+	},
 };

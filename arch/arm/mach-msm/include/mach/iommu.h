@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,6 +15,7 @@
 
 #include <linux/interrupt.h>
 #include <linux/clk.h>
+#include <mach/socinfo.h>
 
 extern pgprot_t     pgprot_kernel;
 
@@ -40,6 +41,7 @@ extern pgprot_t     pgprot_kernel;
 struct msm_iommu_dev {
 	const char *name;
 	int ncb;
+	int ttbr_split;
 };
 
 /**
@@ -71,8 +73,8 @@ struct msm_iommu_ctx_dev {
  */
 struct msm_iommu_drvdata {
 	void __iomem *base;
-	int irq;
 	int ncb;
+	int ttbr_split;
 	struct clk *clk;
 	struct clk *pclk;
 	const char *name;
@@ -92,6 +94,8 @@ struct msm_iommu_ctx_drvdata {
 	int num;
 	struct platform_device *pdev;
 	struct list_head attached_elm;
+	struct iommu_domain *attached_domain;
+	const char *name;
 };
 
 /*
@@ -116,3 +120,17 @@ static inline struct device *msm_iommu_get_ctx(const char *ctx_name)
 #endif
 
 #endif
+
+static inline int msm_soc_version_supports_iommu(void)
+{
+	if (cpu_is_msm8960() &&
+	    SOCINFO_VERSION_MAJOR(socinfo_get_version()) < 2)
+		return 0;
+
+	if (cpu_is_msm8x60() &&
+	    (SOCINFO_VERSION_MAJOR(socinfo_get_version()) != 2 ||
+	    SOCINFO_VERSION_MINOR(socinfo_get_version()) < 1))	{
+		return 0;
+	}
+	return 1;
+}

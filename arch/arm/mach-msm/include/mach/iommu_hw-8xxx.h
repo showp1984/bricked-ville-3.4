@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,11 +15,20 @@
 
 #define CTX_SHIFT 12
 
+#if defined(CONFIG_MSM_IOMMU_CONFIG_GLOBAL_REG_SPACE)
 #define GET_GLOBAL_REG(reg, base) (readl_relaxed((base) + (reg)))
+#else
+#define GET_GLOBAL_REG(reg, base) {}
+#endif
+
 #define GET_CTX_REG(reg, base, ctx) \
 			(readl_relaxed((base) + (reg) + ((ctx) << CTX_SHIFT)))
 
+#if defined(CONFIG_MSM_IOMMU_CONFIG_GLOBAL_REG_SPACE)
 #define SET_GLOBAL_REG(reg, base, val)	writel_relaxed((val), ((base) + (reg)))
+#else
+#define SET_GLOBAL_REG(reg, base, val)	{}
+#endif
 
 #define SET_CTX_REG(reg, base, ctx, val) \
 		writel_relaxed((val), ((base) + (reg) + ((ctx) << CTX_SHIFT)))
@@ -29,12 +38,22 @@
 #define GET_GLOBAL_REG_N(b, n, r)    GET_GLOBAL_REG(b, ((r) + (n << 2)))
 
 /* Field wrappers */
+#if defined(CONFIG_MSM_IOMMU_CONFIG_GLOBAL_REG_SPACE)
 #define GET_GLOBAL_FIELD(b, r, F)    GET_FIELD(((b) + (r)), F##_MASK, F##_SHIFT)
+#else
+#define GET_GLOBAL_FIELD(b, r, F)    {}
+#endif
+
 #define GET_CONTEXT_FIELD(b, c, r, F)	\
 	GET_FIELD(((b) + (r) + ((c) << CTX_SHIFT)), F##_MASK, F##_SHIFT)
 
+#if defined(CONFIG_MSM_IOMMU_CONFIG_GLOBAL_REG_SPACE)
 #define SET_GLOBAL_FIELD(b, r, F, v) \
 	SET_FIELD(((b) + (r)), F##_MASK, F##_SHIFT, (v))
+#else
+#define SET_GLOBAL_FIELD(b, r, F, v) {}
+#endif
+
 #define SET_CONTEXT_FIELD(b, c, r, F, v)	\
 	SET_FIELD(((b) + (r) + ((c) << CTX_SHIFT)), F##_MASK, F##_SHIFT, (v))
 
@@ -57,8 +76,9 @@ do { \
 #define FL_TYPE_TABLE		(1 << 0)
 #define FL_TYPE_SECT		(2 << 0)
 #define FL_SUPERSECTION		(1 << 18)
-#define FL_AP_WRITE		(1 << 10)
-#define FL_AP_READ		(1 << 11)
+#define FL_AP0			(1 << 10)
+#define FL_AP1			(1 << 11)
+#define FL_AP2			(1 << 15)
 #define FL_SHARED		(1 << 16)
 #define FL_BUFFERABLE		(1 << 2)
 #define FL_CACHEABLE		(1 << 3)
@@ -73,6 +93,7 @@ do { \
 #define SL_TYPE_SMALL		(2 << 0)
 #define SL_AP0			(1 << 4)
 #define SL_AP1			(2 << 4)
+#define SL_AP2			(1 << 9)
 #define SL_SHARED		(1 << 10)
 #define SL_BUFFERABLE		(1 << 2)
 #define SL_CACHEABLE		(1 << 3)

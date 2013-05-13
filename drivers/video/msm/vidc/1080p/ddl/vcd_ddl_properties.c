@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -201,6 +201,7 @@ static u32 ddl_set_dec_property(struct ddl_client_context *ddl,
 			decoder->dynamic_prop_change |=
 				DDL_DEC_REQ_OUTPUT_FLUSH;
 			decoder->dpb_mask.client_mask = 0;
+			decoder->field_needed_for_prev_ip = 0;
 			vcd_status = VCD_S_SUCCESS;
 		}
 	break;
@@ -830,8 +831,10 @@ static u32 ddl_set_enc_property(struct ddl_client_context *ddl,
 			property_hdr->sz &&
 			((buffer_format->buffer_format ==
 			VCD_BUFFER_FORMAT_NV12_16M2KA) ||
-			(VCD_BUFFER_FORMAT_TILE_4x2 ==
-			buffer_format->buffer_format))) {
+			(buffer_format->buffer_format ==
+			VCD_BUFFER_FORMAT_TILE_4x2) ||
+			(buffer_format->buffer_format ==
+			VCD_BUFFER_FORMAT_NV21_16M2KA))) {
 			if (buffer_format->buffer_format !=
 				encoder->buf_format.buffer_format) {
 				encoder->buf_format = *buffer_format;
@@ -1010,6 +1013,8 @@ static u32 ddl_set_enc_property(struct ddl_client_context *ddl,
 				ddl_get_metadata_params(ddl,
 						&slice_property_hdr,
 						&slice_meta_data);
+				slice_meta_data.meta_data_enable_flag
+					&= ~VCD_METADATA_ENC_SLICE;
 				ddl_set_metadata_params(ddl,
 						&slice_property_hdr,
 						&slice_meta_data);
@@ -1592,7 +1597,6 @@ static u32 ddl_set_enc_dynamic_property(struct ddl_client_context *ddl,
 			vcd_status = VCD_S_SUCCESS;
 		}
 	}
-	break;
 	case VCD_I_INTRA_REFRESH:
 	{
 		struct vcd_property_intra_refresh_mb_number
@@ -1819,12 +1823,14 @@ void ddl_set_default_encoder_buffer_req(struct ddl_encoder_data *encoder)
 		encoder->input_buf_req.min_count;
 	encoder->input_buf_req.max_count    = DDL_MAX_BUFFER_COUNT;
 	encoder->input_buf_req.sz = y_cb_cr_size;
-	if (encoder->buf_format.buffer_format ==
-		VCD_BUFFER_FORMAT_NV12_16M2KA)
+	if ((encoder->buf_format.buffer_format ==
+		VCD_BUFFER_FORMAT_NV12_16M2KA) ||
+		(encoder->buf_format.buffer_format ==
+		VCD_BUFFER_FORMAT_NV21_16M2KA))
 		encoder->input_buf_req.align =
 			DDL_LINEAR_BUFFER_ALIGN_BYTES;
-	else if (VCD_BUFFER_FORMAT_TILE_4x2 ==
-		encoder->buf_format.buffer_format)
+	else if (encoder->buf_format.buffer_format ==
+		VCD_BUFFER_FORMAT_TILE_4x2)
 		encoder->input_buf_req.align = DDL_TILE_BUFFER_ALIGN_BYTES;
 	encoder->client_input_buf_req = encoder->input_buf_req;
 	memset(&encoder->output_buf_req , 0 ,
@@ -1858,7 +1864,7 @@ u32 ddl_set_default_decoder_buffer_req(struct ddl_decoder_data *decoder,
 		if (!decoder->cont_mode)
 			min_dpb = ddl_decoder_min_num_dpb(decoder);
 		else
-			min_dpb = res_trk_get_min_dpb_count();
+			min_dpb = 5;
 		frame_size = &decoder->client_frame_size;
 		output_buf_req = &decoder->client_output_buf_req;
 		input_buf_req = &decoder->client_input_buf_req;
@@ -1872,19 +1878,6 @@ u32 ddl_set_default_decoder_buffer_req(struct ddl_decoder_data *decoder,
 		input_buf_req = &decoder->actual_input_buf_req;
 		min_dpb = decoder->min_dpb_num;
 		y_cb_cr_size = decoder->y_cb_cr_size;
-		if ((decoder->buf_format.buffer_format ==
-			VCD_BUFFER_FORMAT_TILE_4x2) &&
-			(frame_size->height < MDP_MIN_TILE_HEIGHT)) {
-			frame_size->height = MDP_MIN_TILE_HEIGHT;
-			ddl_calculate_stride(frame_size,
-				!decoder->progressive_only);
-			y_cb_cr_size = ddl_get_yuv_buffer_size(
-				frame_size,
-				&decoder->buf_format,
-				(!decoder->progressive_only),
-				decoder->hdr.decoding, NULL);
-		} else
-			y_cb_cr_size = decoder->y_cb_cr_size;
 	}
 	memset(output_buf_req, 0,
 		sizeof(struct vcd_buffer_requirement));

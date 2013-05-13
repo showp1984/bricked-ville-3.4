@@ -25,6 +25,7 @@ void __init msm9615_device_init(void);
 void __init msm9615_map_io(void);
 void __init msm_map_msm9615_io(void);
 void __init msm9615_init_irq(void);
+void __init msm_rotator_set_split_iommu_domain(void);
 
 extern struct platform_device asoc_msm_pcm;
 extern struct platform_device asoc_msm_dai0;
@@ -254,3 +255,7 @@ extern struct platform_device msm_tpiu_device;
 extern struct platform_device msm_funnel_device;
 extern struct platform_device msm_etm_device;
 #endif
+
+extern struct platform_device msm8960_iommu_domain_device;
+extern struct platform_device msm8930_iommu_domain_device;
+extern struct platform_device apq8064_iommu_domain_device;

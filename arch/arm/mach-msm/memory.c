@@ -330,29 +330,6 @@ static void __init reserve_memory_for_mempools(void)
 	}
 }
 
-unsigned long __init reserve_memory_for_fmem(unsigned long fmem_size)
-{
-	struct membank *mb;
-	int ret;
-	unsigned long fmem_phys;
-
-	if (!fmem_size)
-		return 0;
-
-	mb = &meminfo.bank[meminfo.nr_banks - 1];
-	/*
-	 * Placing fmem at the top of memory causes multimedia issues.
-	 * Instead, place it 1 page below the top of memory to prevent
-	 * the issues from occurring.
-	 */
-	fmem_phys = mb->start + (mb->size - fmem_size) - PAGE_SIZE;
-	ret = memblock_remove(fmem_phys, fmem_size);
-	BUG_ON(ret);
-
-	pr_info("fmem start %lx size %lx\n", fmem_phys, fmem_size);
-	return fmem_phys;
-}
-
 static void __init initialize_mempools(void)
 {
 	struct mem_pool *mpool;
@@ -372,8 +349,17 @@ static void __init initialize_mempools(void)
 
 void __init msm_reserve(void)
 {
+	unsigned long msm_fixed_area_size;
+	unsigned long msm_fixed_area_start;
+
 	memory_pool_init();
 	reserve_info->calculate_reserve_sizes();
+
+	msm_fixed_area_size = reserve_info->fixed_area_size;
+	msm_fixed_area_start = reserve_info->fixed_area_start;
+	if (msm_fixed_area_size)
+		reserve_info->low_unstable_address = msm_fixed_area_start;
+
 	calculate_reserve_limits();
 	adjust_reserve_sizes();
 	reserve_memory_for_mempools();

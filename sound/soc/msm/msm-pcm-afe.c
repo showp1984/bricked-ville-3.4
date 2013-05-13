@@ -141,8 +141,8 @@ static void pcm_afe_process_tx_pkt(uint32_t opcode,
 				pr_debug("prtd->poll_time: %d",
 						prtd->poll_time);
 				hrtimer_start(&prtd->hrt,
-					ns_to_ktime(0),
-					HRTIMER_MODE_REL);
+				ns_to_ktime(0),
+				HRTIMER_MODE_REL);
 				break;
 			}
 			case AFE_EVENT_RTPORT_STOP:
@@ -207,8 +207,8 @@ static void pcm_afe_process_rx_pkt(uint32_t opcode,
 					* 1000 * 1000)/(runtime->rate
 					* runtime->channels * 2)));
 			hrtimer_start(&prtd->hrt,
-				ns_to_ktime(0),
-				HRTIMER_MODE_REL);
+			ns_to_ktime(0),
+			HRTIMER_MODE_REL);
 			pr_debug("prtd->poll_time : %d", prtd->poll_time);
 			break;
 		}

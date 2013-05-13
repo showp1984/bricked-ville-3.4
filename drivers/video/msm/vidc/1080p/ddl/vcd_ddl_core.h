@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -145,9 +145,5 @@
 #define DDL_RESL_CHANGE_NO_CHANGE               0
 #define DDL_RESL_CHANGE_INCREASED               1
 #define DDL_RESL_CHANGE_DECREASED               2
-
-#define VIDC_SM_ERR_CONCEALMENT_ENABLE				1
-#define VIDC_SM_ERR_CONCEALMENT_INTER_SLICE_MB_COPY		2
-#define VIDC_SM_ERR_CONCEALMENT_INTRA_SLICE_COLOR_CONCEALMENT	1
 
 #endif
